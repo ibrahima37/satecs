@@ -1,0 +1,55 @@
+<header class="bg-light border-bottom sticky-top">
+  <nav class="container navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand fw-bold" routerLink="/">Gestion School</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/formations" routerLinkActive="active">
+            <i class="fas fa-graduation-cap me-1"></i>Formations
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/inscriptions" routerLinkActive="active">
+            <i class="fas fa-edit me-1"></i>Inscriptions
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fas fa-home me-1"></i>Accueil
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<main class="container py-5">
+  <section class="mb-5">
+    <h1 class="text-center">Bienvenue !</h1>
+    <p class="lead text-center">Une plateforme intelligente pour la gestion des formations et des inscriptions au sein de notre ecol.</p>
+  </section>
+
+  <section class="mb-5">
+    <h2>📚 Nos objectifs</h2>
+    <p>Faciliter l’accès aux formations professionnelles.</p>
+  </section>
+
+  <section class="mb-5">
+    <h2>🔍 Fonctionnalités</h2>
+    <ul>
+      <li>Consultation des formations disponibles</li>
+      <li>Inscription rapide et sécurisée</li>
+      <li>Suivi des sessions et des participants</li>
+    </ul>
+  </section>
+
+  <section class="mb-5">
+    <h2>🌍 Impact social</h2>
+    <p>Ce projet vise à améliorer la coordination des formations professionnelles au Sénégal,
+      en favorisant l’inclusion numérique et la transparence.</p>
+  </section>
+</main>
+
+<footer class="bg-dark text-white text-center py-3">
+  <p>&copy; 2025 Savoir — Tous droits réservés</p>
+</footer>
