@@ -10,5 +10,4 @@ export interface Formation {
   niveauFormation: string;
   dateCreation?: Date;
   dateModification?: Date;
-  link: string;
 }

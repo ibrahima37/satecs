@@ -1,32 +1,43 @@
 <header class="bg-light border-bottom sticky-top">
-  <nav class="container navbar navbar-expand-lg navbar-light">
-    <a class="navbar-brand fw-bold" routerLink="/">Gestion School</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/formations" routerLinkActive="active">
-            <i class="fas fa-graduation-cap me-1"></i>Formations
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/inscriptions" routerLinkActive="active">
-            <i class="fas fa-edit me-1"></i>Inscriptions
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <i class="fas fa-home me-1"></i>Accueil
-          </a>
-        </li>
-      </ul>
+  <nav class="container navbar navbar-expand-lg navbar-light flex-column">
+
+    <!-- Ligne du titre -->
+    <div class="w-100 d-flex justify-content-start mb-2">
+      <img src="assets/logo1.jpg" alt="Logo" class="img-fluid" style="max-height: 40px;" />
+      <a class="navbar-brand fw-bold fs-4" routerLink="/">Gestion School</a>
     </div>
+
+    <!-- Ligne des boutons -->
+    <div class="w-100 d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-primary" [routerLink]="'/formations'" routerLinkActive="active">
+        <i class="fas fa-graduation-cap me-1"></i> FORMATIONS
+      </button>
+
+      <button class="btn btn-outline-success" [routerLink]="'/inscriptions'" routerLinkActive="active">
+        <i class="fas fa-edit me-1"></i> INSCRIPTIONS
+      </button>
+
+      <button class="btn btn-outline-secondary" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <i class="fas fa-home me-1"></i> ACCUEIL
+      </button>
+
+      <button class="btn" style="background-color: orange; color: white;" [routerLink]="'/actus'" routerLinkActive="active">
+        <i class="fas fa-newspaper me-1"></i> ACTUALITÉS
+      </button>
+
+      <button class="btn btn-outline-secondary" routerLink="/contacts" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <i class="fas fa-address-book me-1"></i> CONTACTS
+      </button>
+    </div>
+
   </nav>
 </header>
+
 
 <main class="container py-5">
   <section class="mb-5">
     <h1 class="text-center">Bienvenue !</h1>
-    <p class="lead text-center">Une plateforme intelligente pour la gestion des formations et des inscriptions au sein de notre ecol.</p>
+    <p class="lead text-center">Une plateforme intelligente pour la gestion des formations et des inscriptions au sein de notre école.</p>
   </section>
 
   <section class="mb-5">

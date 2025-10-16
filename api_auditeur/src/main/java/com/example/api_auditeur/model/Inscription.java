@@ -1,6 +1,8 @@
 package com.example.api_auditeur.model;
 
 import com.example.api_auditeur.model.page_enum.EtatInscription;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +19,8 @@ public class Inscription {
 
     @ManyToOne      //@OneToOne
     @JoinColumn(name = "formation_id")
+    //@JsonBackReference
+    @JsonIgnore
     private Formation formation;
     private LocalDate dateInscription;
 

@@ -2,6 +2,7 @@ package com.example.api_auditeur.model;
 
 import com.example.api_auditeur.model.page_enum.NiveauFormation;
 import com.example.api_auditeur.model.page_enum.TypeFormation;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class Formation {
     private LocalDate dateModification;
 
     @OneToMany(mappedBy = "formation")
+    @JsonBackReference
     private List<Inscription> inscriptionList;
 
 }

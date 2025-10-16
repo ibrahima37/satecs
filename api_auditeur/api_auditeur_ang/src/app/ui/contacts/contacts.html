@@ -1,0 +1,17 @@
+<div class="contact-container">
+  <h2>Contactez-nous</h2>
+  <div class="contact-info">
+    <p>📍 Dakar, Sénégal</p>
+    <p>📞 +221 XX XXX XX XX</p>
+    <p>📧 contact@monsite.com</p>
+  </div>
+  <div id="map" class="map-container"></div><br>
+
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+    <input type="text" formControlName="name" placeholder="Votre nom" />
+    <input type="email" formControlName="email" placeholder="Votre email" />
+    <input type="text" formControlName="subject" placeholder="Sujet" />
+    <textarea formControlName="message" placeholder="Votre message"></textarea>
+    <button type="submit" >Envoyer</button>
+  </form>
+</div>
