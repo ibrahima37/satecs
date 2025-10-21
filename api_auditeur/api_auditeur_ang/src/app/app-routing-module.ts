@@ -10,8 +10,9 @@ export const routes: Routes = [
   {path : "formations", component : Formations},
   {path : "inscriptions", component : Inscriptions},
   {path : "contacts", component : Contacts},
-  { path: 'formations/:id', component: FormationDetail }
-//{ path: '', redirectTo: 'formations', pathMatch: 'full' },
+  { path: 'formations/:id', component: FormationDetail },
+  { path: 'login', loadComponent: () => import('./ui/login/login').then(m => m.Login),
+    pathMatch: 'full' },
   ];
 
 

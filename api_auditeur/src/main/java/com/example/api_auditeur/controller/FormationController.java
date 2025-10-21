@@ -36,4 +36,9 @@ public class FormationController {
         }
         return ResponseEntity.ok(formations);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Formation> uneFormation(@PathVariable Long id) {
+        return ResponseEntity.ok(formService.afficheUneFormationSpecifique(id));
+    }
 }

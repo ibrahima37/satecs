@@ -1,7 +1,6 @@
 package com.example.api_auditeur.model;
 
 import com.example.api_auditeur.model.page_enum.EtatInscription;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

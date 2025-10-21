@@ -1,0 +1,41 @@
+<form [formGroup]="loginForm" ngSubmit="onSubmit()">
+  <h2>CONNEXION</h2>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email" formControlName="email">
+    <div *ngIf="loginForm.get('email')?.errors?.['required']" class="error">
+      Email requis
+    </div>
+  </div>
+
+  <div class="row g-3 align-items-center">
+    <div class="col-auto">
+      <label for="inputPotDePasse6" class="col-form-label">MotDePasse</label>
+    </div>
+    <div class="col-auto">
+      <input type="motDePasse" id="inputPotDePasse6" class="form-control" aria-describedby="motDePasseHelpInline">
+    </div>
+    <div *ngIf="loginForm.get('motDePasse')?.errors?.['required']" class="error">
+      <div class="col-auto">
+    <span id="motDePasseHelpInline" class="form-text">
+      Doit comporter 8-20 caractères.
+    </span>
+      </div>
+    </div>
+
+  </div>
+
+  <button type="submit" [disabled]="loading">
+    {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+  </button>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <div class="links">
+    <a routerLink="/register">Créer un compte</a>
+    <a routerLink="/forgot-password">Mot de passe oublié ?</a>
+  </div>
+</form>

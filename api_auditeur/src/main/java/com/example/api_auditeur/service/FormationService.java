@@ -35,4 +35,8 @@ public class FormationService {
     public List<Formation> liteFormatins(){
         return formRepo.findAll();
     }
+
+    public Formation afficheUneFormationSpecifique(Long id) {
+        return  formRepo.findById(id).orElseThrow();
+    }
 }

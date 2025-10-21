@@ -23,7 +23,7 @@ public class Paiement {
     @Enumerated(EnumType.STRING)
     private StatutPaiement statutPaiement;
 
-    private LocalDate DatePaiement;
+    private LocalDate datePaiement;
 
     @Enumerated(EnumType.STRING)
     private ModePaiement modePaiement;

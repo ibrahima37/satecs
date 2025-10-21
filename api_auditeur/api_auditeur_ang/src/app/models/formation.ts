@@ -1,13 +1,22 @@
+import { TypeFormation } from './notification';
+
 export interface Formation {
-  id?: number,
+  id?: number;
   titre: string;
   description: string;
   dateDebut: string;
-  deteFin: string;
+  dateFin: string;
   capacite: number;
   tarif: number;
-  typeFormation: string;
-  niveauFormation: string;
-  dateCreation?: Date;
-  dateModification?: Date;
+  typeFormation: TypeFormation;
+  niveauFormation: NiveauFormation;
+  dateCreation?: string;
+  dateModification?: string;
+}
+
+export enum NiveauFormation{
+  DEBUTANT = 'DEBUTANT',
+  INTERMEDIAIRE = 'INTERMEDIAIRE',
+  AVANCE = 'AVANCE',
+  EXPERT = 'EXPERT'
 }

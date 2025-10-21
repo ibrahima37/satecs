@@ -1,1 +1,36 @@
-<p>formation-detail works!</p>
+<div *ngIf="isLoading" class="test-center py-5">
+  <div class="spinner-border test-primary" role="status">Chargement....</div>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger mt-3">
+  {{ errorMessage }}
+</div>
+<div class="container py-4" *ngIf="!isLoading && formation">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h4>{{ formation.titre }}</h4>
+    </div>
+    <div class="card-body">
+      <p><strong>Description : </strong>{{ formation.description }}</p>
+      <p><strong>Capacité : </strong>{{formation.capacite }}</p>
+      <p><strong>Tarif : </strong>{{ formation.tarif }}</p>
+      <p><strong>Niveau : </strong>{{ formation.niveauFormation }}</p>
+      <p><strong>Type : </strong>{{ formation.typeFormation }}</p>
+      <p><strong>Date Debut : </strong>{{ formation.dateDebut }}</p>
+      <p *ngIf="formation.dateFin">
+        <strong>Date Fin : </strong> {{ formation.dateFin }}
+      </p>
+      <p *ngIf="!formation.dateFin">
+        <strong>Date Fin : </strong> Non définie
+      </p>
+
+      <div class="mt-4 text-end">
+        <button class="btn btn-success" (click)="inscrire()">
+          <i class="fas fa-edit me-1"> </i> S'inscrire
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
