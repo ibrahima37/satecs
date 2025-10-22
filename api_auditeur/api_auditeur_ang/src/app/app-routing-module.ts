@@ -13,6 +13,11 @@ export const routes: Routes = [
   { path: 'formations/:id', component: FormationDetail },
   { path: 'login', loadComponent: () => import('./ui/login/login').then(m => m.Login),
     pathMatch: 'full' },
+  {
+    path: 'register',
+    loadComponent: () => import('./ui/register/register').then(m => m.Register)
+  }
+
   ];
 
 

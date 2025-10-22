@@ -42,25 +42,22 @@ export class Inscriptions implements OnInit{
   ){}
 
   ngOnInit(): void{
-    this.checkAutentification();
+     this.form = this.fb.group({
 
-    this.form = this.fb.group({
+      nom: ['', Validators.required],
+      prenom: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      telephone: ['', Validators.required],
 
-    nom: ['', Validators.required],
-    prenom: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    telephone: ['', Validators.required],
-
-    formationId: ['', Validators.required],
-    utilisateurId: ['', Validators.required],
-    dateInscription: [this.getToday(), Validators.required],
-    etatInscription: ["VALIDER", Validators.required],
-    niveauFormation: ['DEBUTANT', Validators.required],
-    paiement: ['', Validators.required]
+      formationId: ['', Validators.required],
+      utilisateurId: ['', Validators.required],
+      dateInscription: [this.getToday(), Validators.required],
+      etatInscription: ["VALIDER", Validators.required],
+      niveauFormation: ['DEBUTANT', Validators.required],
+      paiement: ['', Validators.required]
     });
 
     const formationId = this.route.snapshot.queryParamMap.get('formationId');
-    const utilisateur = this.utilisateurService.getUtilisateurConnect();
 
     if(formationId){
       this.form.patchValue({ formationId });
@@ -73,14 +70,8 @@ export class Inscriptions implements OnInit{
         }
       });
     }
-
-    if(utilisateur?.id){
-      this.form.patchValue({ utilisateurId: utilisateur.id });
-    } else {
-      this.errorMessage = 'Utilisateur non connecté';
-    }
+    this.checkAutentification();
   }
-
   checkAutentification(): void{
     this.utilisateurService.isLoggedIn().subscribe(isLoggedIn => {
       this.isAuthentificated = isLoggedIn;
@@ -107,6 +98,7 @@ export class Inscriptions implements OnInit{
 
   soumettre(): void{
     if(this.form.invalid){
+      console.log('Formulaire invalide :', this.form.value);
       this.errorMessage = "Formulaire Invalide";
       return;
     }
@@ -119,6 +111,7 @@ export class Inscriptions implements OnInit{
       next: (data: any) => {
         this.successMessage = 'Inscription Enregistrée';
         this.recapitulatif = this.form.value;
+        console.log('Récapitulatif :', this.recapitulatif);
       },
       error: (err: any) => {
         this.errorMessage = 'Erreur : ' +(err?.message ?? 'Erreur inconnue');

@@ -16,14 +16,19 @@ public class UtilisateurService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public Utilisateur login(Utilisateur u){
-        u.setMotDePasse(new BCryptPasswordEncoder().encode(u.getMotDePasse()));
+    public Utilisateur register(Utilisateur u){
+        u.setMotDePasse(passwordEncoder.encode(u.getMotDePasse()));
         return utilisateurRepo.save(u);
     }
 
-    public Optional<Utilisateur> authentifier(String email, String motDePasse){
-        return Optional.ofNullable(utilisateurRepo.findByEmailAndMotDePass(email, motDePasse)
-                .orElseThrow(() -> new RuntimeException("Email ou mot de passe incorrect")));
+    //CONNEXION
+    public Optional<Utilisateur> login(String email, String motDePasse){
+        Utilisateur utilisateur = utilisateurRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email incorrect"));
+        if (!passwordEncoder.matches(motDePasse, utilisateur.getMotDePasse())) {
+            throw new RuntimeException("Mot de passe incorrect");
+        }
+        return Optional.of(utilisateur);
     }
 
     public Utilisateur modifierMotDePasse(String email, String nouveauMDP){

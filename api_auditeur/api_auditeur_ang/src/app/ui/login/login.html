@@ -1,41 +1,51 @@
-<form [formGroup]="loginForm" ngSubmit="onSubmit()">
-  <h2>CONNEXION</h2>
+<div class="login-container">
+  <h2>Connexion</h2>
 
-  <div class="form-group">
-    <label>Email</label>
-    <input type="email" formControlName="email">
-    <div *ngIf="loginForm.get('email')?.errors?.['required']" class="error">
-      Email requis
-    </div>
-  </div>
-
-  <div class="row g-3 align-items-center">
-    <div class="col-auto">
-      <label for="inputPotDePasse6" class="col-form-label">MotDePasse</label>
-    </div>
-    <div class="col-auto">
-      <input type="motDePasse" id="inputPotDePasse6" class="form-control" aria-describedby="motDePasseHelpInline">
-    </div>
-    <div *ngIf="loginForm.get('motDePasse')?.errors?.['required']" class="error">
-      <div class="col-auto">
-    <span id="motDePasseHelpInline" class="form-text">
-      Doit comporter 8-20 caractères.
-    </span>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Champ Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="form-control"
+        [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        placeholder="Votre email">
+      <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+        Email invalide
       </div>
     </div>
 
-  </div>
+    <!-- Champ Mot de passe -->
+    <div class="form-group">
+      <label for="motDePasse">Mot de passe</label>
+      <input
+        type="password"
+        id="motDePasse"
+        formControlName="motDePasse"
+        class="form-control"
+        [class.is-invalid]="loginForm.get('motDePasse')?.invalid && loginForm.get('motDePasse')?.touched"
+        placeholder="Votre mot de passe">
+      <div class="invalid-feedback" *ngIf="loginForm.get('motDePasse')?.invalid && loginForm.get('motDePasse')?.touched">
+        Mot de passe requis (min. 6 caractères)
+      </div>
+    </div>
 
-  <button type="submit" [disabled]="loading">
-    {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
-  </button>
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger error-message">
+      {{ errorMessage }}
+    </div>
 
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
+    <!-- Bouton Submit -->
+    <button type="submit" class="btn btn-primary" [disabled]="loading">
+      {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+    </button>
 
-  <div class="links">
-    <a routerLink="/register">Créer un compte</a>
-    <a routerLink="/forgot-password">Mot de passe oublié ?</a>
-  </div>
-</form>
+    <!-- Liens de navigation -->
+    <div class="links">
+      <a routerLink="/register">Créer un compte</a>
+      <a routerLink="/forgot-password">Mot de passe oublié ?</a>
+    </div>
+  </form>
+</div>

@@ -17,13 +17,13 @@ public class UtilisateurController {
 
     @PostMapping
     public ResponseEntity<Utilisateur> inscription(@RequestBody Utilisateur ut){
-        Utilisateur utilisateur = utiService.login(ut);
+        Utilisateur utilisateur = utiService.register(ut);
         return ResponseEntity.status(HttpStatus.CREATED).body(utilisateur);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Utilisateur> connexion(@RequestBody Utilisateur ut){
-    Utilisateur utilisateur = utiService.authentifier(ut.getEmail(), ut.getMotDePasse())
+    Utilisateur utilisateur = utiService.login(ut.getEmail(), ut.getMotDePasse())
             .orElseThrow(()-> new RuntimeException("Email ou mot de passe incorrect"));
     return ResponseEntity.ok(ut);
     }

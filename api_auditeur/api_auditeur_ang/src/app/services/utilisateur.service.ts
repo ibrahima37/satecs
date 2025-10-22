@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Utilisateur } from '../models/utilisateur';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilisateurService {
 
+  private utilisateurConnecte: any = null;
+  private apiUrl = "http://192.168.1.184:8087/api/utilisateur";
   private isAuthentificatedSubject = new BehaviorSubject<boolean>(false);
   private currentUtilisateurSubject = new BehaviorSubject<any>(null);
 
@@ -18,6 +21,10 @@ export class UtilisateurService {
     }
   }
 
+  inscription(utilisateur: Utilisateur): Observable<Utilisateur>{
+    return this.http.post<Utilisateur>(`${this.apiUrl}`, utilisateur);
+  }
+
   isLoggedIn(): Observable<boolean> {
     return this.isAuthentificatedSubject.asObservable();
   }
@@ -26,17 +33,9 @@ export class UtilisateurService {
     return this.currentUtilisateurSubject.asObservable();
   }
 
-  setUtilisateurConnect(utilisateur: any): void{
-    const utilisateurData = {
-      id: utilisateur.id,
-      nom: utilisateur.nom,
-      email: utilisateur.email,
-      prenom: utilisateur.prenom,
-    };
-
-    localStorage.setItem('currentUtilisateur', JSON.stringify(utilisateurData));
-    this.isAuthentificatedSubject.next(true);
-    this.currentUtilisateurSubject.next(utilisateurData);
+  setUtilisateurConnect(utilisateur: any): void {
+    this.utilisateurConnecte = utilisateur;
+    localStorage.setItem('utilisateur', JSON.stringify(utilisateur)); // optionnel
   }
 
   logout(): void {
@@ -46,7 +45,8 @@ export class UtilisateurService {
   }
 
   getUtilisateurConnect(): any {
-    const user = localStorage.getItem('currentUtilisateur');
+    if (this.utilisateurConnecte) return this.utilisateurConnecte;
+    const user = localStorage.getItem('utilisateur');
     return user ? JSON.parse(user) : null;
   }
 
@@ -57,7 +57,7 @@ export class UtilisateurService {
   }
 
   login(email: string, motDePasse: string): Observable<any>{
-    return this.http.post('/api/login', {email, motDePasse});
+    return this.http.post('http://192.168.1.184:8087/api/utilisateur/login', {email, motDePasse});
   }
 
 }
