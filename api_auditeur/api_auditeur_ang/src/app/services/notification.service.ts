@@ -1,79 +1,134 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { NotificationApp, CanalNotification, TypeFormation } from '../models/notification';
+import { AuthService } from './auth.service';
+import { NotificationApp, CanalNotification, TypeFormation, CreateNotificationRequest } from '../models/notification';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
 
-  private apiUrl = 'http://192.168.1.184: 8087/api/notification';
+  private apiUrl = 'http://192.168.1.109:9090/api/notification';
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient, public auth: AuthService){}
 
-  getNotification(): Observable<NotificationApp[]>{
-    return this.http.get<NotificationApp[]>(this.apiUrl).pipe(
+  getAllNotifications(): Observable<NotificationApp[]>{
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<NotificationApp[]>(this.apiUrl, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   getNotificationById(id: number): Observable<NotificationApp>{
-    return this.http.get<NotificationApp>(`${this.apiUrl}/${id}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<NotificationApp>(`${this.apiUrl}/${id}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   updateNotification(id: number, notification: NotificationApp): Observable<NotificationApp>{
-    return this.http.put<NotificationApp>(`${this.apiUrl}/${id}`, notification).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.put<NotificationApp>(`${this.apiUrl}/${id}`, notification, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
-  deleteNotification(id: number): Observable<void>{
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
-      catchError(this.handleError)
-    );
+  creerNotification(request: CreateNotificationRequest): Observable<Notification> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post<Notification>(this.apiUrl, request, { headers });
   }
 
-  envoyerNotification(id: number): Observable<NotificationApp>{
-    return this.http.post<NotificationApp>(`${this.apiUrl}/${id}/envoyer`, {}).pipe(
-      catchError(this.handleError)
-    );
+  envoyerNotification(id: number): Observable<Notification> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post<Notification>(`${this.apiUrl}/${id}/envoyer`, {}, { headers });
   }
 
-  getNotificationByDestinataire(destinataire: string): Observable<NotificationApp[]>{
-    return this.http.get<NotificationApp[]>(`${this.apiUrl}/destinataire/${destinataire}`).pipe(
-      catchError(this.handleError)
-    );
+  getNotificationsEnAttente(): Observable<Notification[]> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<Notification[]>(`${this.apiUrl}/en-attente`, { headers });
+  }
+
+  getNotificationsByDestinataire(destinataire: string): Observable<Notification[]> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<Notification[]>(`${this.apiUrl}/destinataire/${destinataire}`, { headers });
+  }
+
+  supprimerNotification(id: number): Observable<void> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers });
   }
 
   getNotificationByCanal(canal: CanalNotification): Observable<NotificationApp[]>{
-    return this.http.get<NotificationApp[]>(`${this.apiUrl}/canal/${canal}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<NotificationApp[]>(`${this.apiUrl}/canal/${canal}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
-  getNotificationByDType(type: TypeFormation): Observable<NotificationApp[]>{
-    return this.http.get<NotificationApp[]>(`${this.apiUrl}/type/${type}`).pipe(
+  getNotificationByType(type: TypeFormation): Observable<NotificationApp[]>{
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<NotificationApp[]>(`${this.apiUrl}/type/${type}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   getNotificationsEnvoyee(): Observable<NotificationApp[]>{
-    return this.http.get<NotificationApp[]>(`${this.apiUrl}/envoyees`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<NotificationApp[]>(`${this.apiUrl}/envoyees`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   getNotificationsNonEnvoyee(): Observable<NotificationApp[]>{
-    return this.http.get<NotificationApp[]>(`${this.apiUrl}/nonenvoyees`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<NotificationApp[]>(`${this.apiUrl}/nonenvoyees`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   getNotificationsByPeriode(dateDebut: string, dateFin: string): Observable<NotificationApp[]> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
     return this.http.get<NotificationApp[]>(`${this.apiUrl}/periode`, {
       params: { dateDebut, dateFin }
     }).pipe(
@@ -82,14 +137,22 @@ export class NotificationService {
   }
 
   marquerCommeLue(id: number): Observable<NotificationApp> {
-    return this.http.patch<NotificationApp>(`${this.apiUrl}/${id}/lue`, {}).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.patch<NotificationApp>(`${this.apiUrl}/${id}/lue`, { headers }, {}).pipe(
       catchError(this.handleError)
     );
   }
 
   // Envoyer des notifications en masse
   envoyerNotificationsEnMasse(ids: number[]): Observable<NotificationApp[]> {
-    return this.http.post<NotificationApp[]>(`${this.apiUrl}/envoyer-masse`, { ids }).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post<NotificationApp[]>(`${this.apiUrl}/envoyer-masse`, { ids }, { headers }).pipe(
       catchError(this.handleError)
     );
   }

@@ -1,4 +1,4 @@
-package com.example.api_auditeur.dto.formation;
+package com.example.api_auditeur.dto;
 
 import com.example.api_auditeur.model.page_enum.NiveauFormation;
 import com.example.api_auditeur.model.page_enum.TypeFormation;
@@ -29,7 +29,7 @@ public class FormationDto {
     private LocalDate dateDebut;
 
     @NotNull(message = "La date de fin est obligatoire")
-    private LocalDate deteFin;
+    private LocalDate dateFin;
 
     @NotNull(message = "La capacité est obligatoire")
     @Min(value = 1, message = "La capacité doit être au moins 1")

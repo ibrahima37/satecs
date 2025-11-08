@@ -23,3 +23,12 @@ export enum CanalNotification {
   PUSH = 'PUSH',
   NOTIFICATION_APP = 'NOTIFICATION_APP'
 }
+
+export interface CreateNotificationRequest {
+  objet: string;
+  contenu: string;
+  type: 'PRESENTIEL' | 'EN_LIGNE' | 'HYBRIDE';
+  destinataire: string;
+  canalNotification: 'EMAIL' | 'SMS' | 'PUSH';
+  envoyerImmediatement?: boolean;
+}

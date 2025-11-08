@@ -1,114 +1,48 @@
-<div class="container py-4">
-  <h3>Inscription à la formation</h3>
+<div class="container">
+  <mat-card class="login-form" [formGroup]="loginForm">
+    <mat-card-header>
+      <mat-card-title>S'INSCRIRE</mat-card-title>
+    </mat-card-header>
 
-  <!-- ✅ Alerte si non connecté -->
-  <div *ngIf="!isAuthentificated" class="alert alert-warning d-flex align-items-center justify-content-between" role="alert">
-    <div>
-      <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      <strong>Connexion requise :</strong> Vous devez être connecté pour vous inscrire à cette formation.
-    </div>
-    <button type="button" class="btn btn-primary" (click)="redirectToLogin()">
-      <i class="bi bi-box-arrow-in-right me-1"></i>
-      Se connecter
-    </button>
-  </div>
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Prenom</mat-label>
+        <input matInput formControlName="prenom">
+      </mat-form-field>
 
-  <!-- ✅ Afficher le nom de l'utilisateur connecté -->
-  <div *ngIf="isAuthentificated && currentUtilisateur" class="alert alert-info">
-    <i class="bi bi-person-circle me-2"></i>
-    Connecté en tant que : <strong>{{ currentUtilisateur.nom }} {{ currentUtilisateur.prenom }}</strong>
-  </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Nom</mat-label>
+        <input matInput formControlName="nom">
+      </mat-form-field>
 
-  <div *ngIf="formation" class="card mb-3">
-    <div class="card-body">
-      <h5>{{ formation.titre }}</h5>
-      <p>{{ formation.description }}</p>
-      <p><strong>Dates :</strong> {{ formation.dateDebut | date }} au {{ formation.dateFin | date }}</p>
-      <p><strong>Tarif :</strong> {{ formation.tarif }} FCFA</p>
-    </div>
-  </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Numero Tel</mat-label>
+        <input matInput formControlName="tel">
+      </mat-form-field>
 
-  <!-- ✅ Désactiver le formulaire si non connecté -->
-  <form [formGroup]="form" (ngSubmit)="soumettre()">
-    <fieldset [disabled]="!isAuthentificated">
-      <input type="hidden" formControlName="formationId">
-      <input type="hidden" formControlName="utilisateurId">
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Email</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
 
-      <div class="mb-3">
-        <label for="dateInscription" class="form-label">DATE INSCRIPTION</label>
-        <input type="text" class="form-control" formControlName="dateInscription" readonly>
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Mot de Passe</mat-label>
+        <input matInput type="password" formControlName="motDePasse">
+      </mat-form-field>
 
-      <div class="mb-3">
-        <label for="etatInscription" class="form-label">ETAT</label>
-        <select class="form-select" formControlName="etatInscription">
-          <option value="VALIDER">VALIDÉ</option>
-          <option value="REJETER">REJETÉ</option>
-          <option value="ANNULEE">ANNULÉE</option>
-          <option value="EN_COURS_VALIDATION">EN COURS DE VALIDATION</option>
-          <option value="PAIEMENT_EN_ATTENTE">PAIEMENT EN ATTENTE</option>
-          <option value="DOCUMENTS_EN_ATTENTE">DOCUMENTS EN ATTENTE</option>
-        </select>
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Choisissez une formation</mat-label>
+        <mat-select formControlName="formationId">
+          <mat-option *ngFor="let f of formations" [value]="f.id">
+            {{ f.titre }} ({{ f.typeFormation }} - {{ f.niveauFormation }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <div class="mb-3">
-        <label for="niveauFormation" class="form-label">NIVEAU</label>
-        <select class="form-select" formControlName="niveauFormation">
-          <option value="DEBUTANT">DÉBUTANT</option>
-          <option value="INTERMEDIAIRE">INTERMÉDIAIRE</option>
-          <option value="AVANCE">AVANCÉ</option>
-          <option value="EXPERT">EXPERT</option>
-        </select>
-      </div>
+    </mat-card-content>
 
-      <div class="mb-3">
-        <label for="paiement" class="form-label">MODE DE PAIEMENT</label>
-        <select class="form-select" formControlName="paiement">
-          <option value="">Sélectionnez un mode de paiement</option>
-          <option value="CARTE_BANCAIRE">CARTE BANCAIRE</option>
-          <option value="VIREMENT">VIREMENT</option>
-          <option value="ESPECES">ESPÈCES</option>
-          <option value="CHEQUE">CHÈQUE</option>
-          <option value="MANDAT">MANDAT</option>
-        </select>
-      </div>
-
-      <!-- ✅ Bouton désactivé si non connecté -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="!isAuthentificated || form.invalid">
-        <i class="bi bi-check-circle me-1"></i>
-        Soumettre l'inscription
-      </button>
-    </fieldset>
-  </form>
-
-  <div *ngIf="successMessage" class="alert alert-success mt-3">
-    <i class="bi bi-check-circle-fill me-2"></i>
-    {{ successMessage }}
-  </div>
-
-  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-    <i class="bi bi-exclamation-circle-fill me-2"></i>
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="recapitulatif" class="card mt-4 border-success">
-    <div class="card-header bg-success text-white">
-      <strong>Récapitulatif de l'inscription</strong>
-    </div>
-    <div class="card-body">
-      <p><strong>ID FORMATION :</strong> {{ recapitulatif.formationId }}</p>
-      <p><strong>ID UTILISATEUR :</strong> {{ recapitulatif.utilisateurId }}</p>
-      <p><strong>Nom :</strong> {{ recapitulatif.nom }}</p>
-      <p><strong>Prénom :</strong> {{ recapitulatif.prenom }}</p>
-      <p><strong>Email :</strong> {{ recapitulatif.email }}</p>
-      <p><strong>Téléphone :</strong> {{ recapitulatif.telephone }}</p>
-      <p><strong>Niveau :</strong> {{ recapitulatif.niveauFormation }}</p>
-      <p><strong>Paiement :</strong> {{ recapitulatif.paiement }}</p>
-      <p><strong>DATE INSCRIPTION :</strong> {{ recapitulatif.dateInscription | date: 'dd/MM/yyyy' }}</p>
-      <p><strong>État :</strong> {{ recapitulatif.etatInscription }}</p>
-    </div>
-  </div>
+    <mat-card-actions align="end">
+      <button (click)="inscrire()" mat-raised-button color="primary">S'inscrire</button>
+    </mat-card-actions>
+  </mat-card>
 </div>

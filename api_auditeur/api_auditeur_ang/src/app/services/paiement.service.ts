@@ -1,83 +1,132 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Paiement, StatutPaiement, ModePaiement } from '../models/paiement';
+import { AuthService } from './auth.service';
+import { Paiement, StatutPaiement, ModePaiement, CreatePaiementRequest } from '../models/paiement';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaiementService {
 
-private apiUrl = 'http://192.168.1.184:8087/api/paiement';
+private apiUrl = 'http://192.168.1.109:9090/api/paiement';
 
-constructor(private http: HttpClient) {}
+constructor(private http: HttpClient, public auth: AuthService) {}
 
   // Récupérer tous les paiements
-  getPaiements(): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(this.apiUrl).pipe(
+  getAllPaiements(): Observable<Paiement[]> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<Paiement[]>(this.apiUrl, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Récupérer un paiement par ID
   getPaiementById(id: number): Observable<Paiement> {
-    return this.http.get<Paiement>(`${this.apiUrl}/${id}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<Paiement>(`${this.apiUrl}/${id}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Récupérer un paiement par numéro de transaction
   getPaiementByNumTransaction(numTransaction: string): Observable<Paiement> {
-    return this.http.get<Paiement>(`${this.apiUrl}/transaction/${numTransaction}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<Paiement>(`${this.apiUrl}/transaction/${numTransaction}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Créer un nouveau paiement
-  createPaiement(paiement: Paiement): Observable<Paiement> {
-    return this.http.post<Paiement>(this.apiUrl, paiement).pipe(
-      catchError(this.handleError)
-    );
+  creerPaiement(request: CreatePaiementRequest): Observable<Paiement> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.post<Paiement>(this.apiUrl, request, { headers });
   }
 
   // Mettre à jour un paiement
   updatePaiement(id: number, paiement: Paiement): Observable<Paiement> {
-    return this.http.put<Paiement>(`${this.apiUrl}/${id}`, paiement).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.put<Paiement>(`${this.apiUrl}/${id}`, paiement, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Mettre à jour le statut d'un paiement
   updateStatutPaiement(id: number, statut: StatutPaiement): Observable<Paiement> {
-    return this.http.patch<Paiement>(`${this.apiUrl}/${id}/statut`, { statut }).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.patch<Paiement>(`${this.apiUrl}/${id}/statut`, { statut }, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Supprimer un paiement
   deletePaiement(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Récupérer les paiements par statut
   getPaiementsByStatut(statut: StatutPaiement): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(`${this.apiUrl}/statut/${statut}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<Paiement[]>(`${this.apiUrl}/statut/${statut}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Récupérer les paiements par mode de paiement
   getPaiementsByMode(mode: ModePaiement): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(`${this.apiUrl}/mode/${mode}`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<Paiement[]>(`${this.apiUrl}/mode/${mode}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
 
   // Récupérer les paiements par période
   getPaiementsByPeriode(dateDebut: string, dateFin: string): Observable<Paiement[]> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
     return this.http.get<Paiement[]>(`${this.apiUrl}/periode`, {
       params: { dateDebut, dateFin }
     }).pipe(
@@ -87,7 +136,12 @@ constructor(private http: HttpClient) {}
 
   // Calculer le montant total des paiements
   getTotalMontant(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/total`).pipe(
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<number>(`${this.apiUrl}/total`, { headers }).pipe(
       catchError(this.handleError)
     );
   }
@@ -106,6 +160,34 @@ constructor(private http: HttpClient) {}
 
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
+  }
+
+  validerPaiement(id: number): Observable<Paiement> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.patch<Paiement>(`${this.apiUrl}/${id}/valider`, { headers }, {});
+  }
+
+  annulerPaiement(id: number, motif?: string): Observable<Paiement> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    const url = motif ? `${this.apiUrl}/${id}/annuler?motif=${motif}` : `${this.apiUrl}/${id}/annuler`;
+    return this.http.patch<Paiement>(url, { headers }, {});
+  }
+
+  getTotalPaiementsValides(): Observable<{ totalValides: number }> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    console.log('Token envoyé :', token);
+    return this.http.get<{ totalValides: number }>(`${this.apiUrl}/statistiques/total-valides`, { headers });
   }
 
 }

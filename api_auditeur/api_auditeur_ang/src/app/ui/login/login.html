@@ -1,51 +1,28 @@
-<div class="login-container">
-  <h2>Connexion</h2>
+<div class="container">
+  <mat-card class="login-form" [formGroup]="loginForm">
+    <mat-card-header>
+      <mat-card-title>AUTHENTIFICATION</mat-card-title>
+    </mat-card-header>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <!-- Champ Email -->
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input
-        type="email"
-        id="email"
-        formControlName="email"
-        class="form-control"
-        [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-        placeholder="Votre email">
-      <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-        Email invalide
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Email</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Votre Mot de Passe</mat-label>
+        <input matInput type="password" formControlName="motDePasse">
+      </mat-form-field>
+
+      <div class="d-flex justify-content-between mt-2">
+        <a (click)="openRegister()" class="text-primary"><mat-icon>person_add</mat-icon> Créer un compte</a>
+        <a (click)="openResetPassword()" class="text-accent"><mat-icon>lock_reset</mat-icon> Mot de passe oublié ?</a>
       </div>
-    </div>
+    </mat-card-content>
 
-    <!-- Champ Mot de passe -->
-    <div class="form-group">
-      <label for="motDePasse">Mot de passe</label>
-      <input
-        type="password"
-        id="motDePasse"
-        formControlName="motDePasse"
-        class="form-control"
-        [class.is-invalid]="loginForm.get('motDePasse')?.invalid && loginForm.get('motDePasse')?.touched"
-        placeholder="Votre mot de passe">
-      <div class="invalid-feedback" *ngIf="loginForm.get('motDePasse')?.invalid && loginForm.get('motDePasse')?.touched">
-        Mot de passe requis (min. 6 caractères)
-      </div>
-    </div>
-
-    <!-- Message d'erreur -->
-    <div *ngIf="errorMessage" class="alert alert-danger error-message">
-      {{ errorMessage }}
-    </div>
-
-    <!-- Bouton Submit -->
-    <button type="submit" class="btn btn-primary" [disabled]="loading">
-      {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
-    </button>
-
-    <!-- Liens de navigation -->
-    <div class="links">
-      <a routerLink="/register">Créer un compte</a>
-      <a routerLink="/forgot-password">Mot de passe oublié ?</a>
-    </div>
-  </form>
+    <mat-card-actions align="end">
+      <button (click)="login()" mat-raised-button color="primary">Login</button>
+    </mat-card-actions>
+  </mat-card>
 </div>

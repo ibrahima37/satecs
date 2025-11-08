@@ -1,0 +1,26 @@
+.percentage-bar {
+  display: flex;
+  height: 30px;
+  margin-top: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 12px;
+  color: white;
+  text-align: center;
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 300px;
+}
+.chart-box {
+  margin-bottom: 2rem;
+}

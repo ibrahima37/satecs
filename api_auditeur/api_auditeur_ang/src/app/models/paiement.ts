@@ -23,3 +23,9 @@ export enum ModePaiement{
   MOBILE_MONEY = 'MOBILE_MONEY',
   CHEQUE = 'CHEQUE'
 }
+
+export interface CreatePaiementRequest {
+numTransaction: string;
+montant: number;
+modePaiement: ModePaiement;
+}

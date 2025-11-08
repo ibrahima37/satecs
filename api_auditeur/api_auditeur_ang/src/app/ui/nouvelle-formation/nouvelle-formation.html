@@ -1,0 +1,59 @@
+<mat-card>
+  <mat-card-title>Créer une formation</mat-card-title>
+  <form [formGroup]="formationForm" (ngSubmit)="submit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Titre</mat-label>
+      <input matInput formControlName="titre">
+      <mat-error *ngIf="formationForm.get('titre')?.hasError('required')">
+        Le titre est requis
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Date de début</mat-label>
+      <input matInput type="date" formControlName="dateDebut">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Date de fin</mat-label>
+      <input matInput type="date" formControlName="dateFin">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Capacité</mat-label>
+      <input matInput type="number" formControlName="capacite">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Tarif</mat-label>
+      <input matInput type="number" formControlName="tarif">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Type de formation</mat-label>
+      <mat-select formControlName="typeFormation">
+        <mat-option value="EN_LIGNE">En ligne</mat-option>
+        <mat-option value="EN_PRESENTIEL">Présentiel</mat-option>
+        <mat-option value="INITIALE">Initiale</mat-option>
+        <mat-option value="CONTINUE">Continue</mat-option>
+        <mat-option value="SPECIALISATION">Specialisation</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Niveau</mat-label>
+      <mat-select formControlName="niveauFormation">
+        <mat-option value="DEBUTANT">DEBUTANT</mat-option>
+        <mat-option value="INTERMEDIAIRE">INTERMEDIAIRE</mat-option>
+        <mat-option value="AVANCE">AVANCE</mat-option>
+        <mat-option value="EXPERT">EXPERT</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Créer</button>
+  </form>
+</mat-card>

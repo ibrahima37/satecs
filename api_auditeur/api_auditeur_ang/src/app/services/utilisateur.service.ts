@@ -9,7 +9,7 @@ import { Utilisateur } from '../models/utilisateur';
 export class UtilisateurService {
 
   private utilisateurConnecte: any = null;
-  private apiUrl = "http://192.168.1.184:8087/api/utilisateur";
+  private apiUrl = "http://192.168.1.109:9090/api/utilisateur";
   private isAuthentificatedSubject = new BehaviorSubject<boolean>(false);
   private currentUtilisateurSubject = new BehaviorSubject<any>(null);
 
@@ -45,9 +45,23 @@ export class UtilisateurService {
   }
 
   getUtilisateurConnect(): any {
-    if (this.utilisateurConnecte) return this.utilisateurConnecte;
-    const user = localStorage.getItem('utilisateur');
-    return user ? JSON.parse(user) : null;
+    if (this.utilisateurConnecte) {
+      return this.utilisateurConnecte;
+    }
+
+    try {
+      const user = localStorage.getItem('utilisateur');
+      if (!user || user === 'undefined') {
+        this.utilisateurConnecte = null;
+      } else {
+        this.utilisateurConnecte = JSON.parse(user);
+      }
+    } catch (error) {
+      console.error('Erreur lors du parsing du token utilisateur :', error);
+      this.utilisateurConnecte = null;
+    }
+
+    return this.utilisateurConnecte;
   }
 
   clearUtilisateur(): void {
@@ -56,8 +70,13 @@ export class UtilisateurService {
     this.isAuthentificatedSubject.next(false);
   }
 
+  clearUtilisateurConnect(): void {
+    this.utilisateurConnecte = null;
+    localStorage.removeItem('utlisateur');
+  }
+
   login(email: string, motDePasse: string): Observable<any>{
-    return this.http.post('http://192.168.1.184:8087/api/utilisateur/login', {email, motDePasse});
+    return this.http.post('http://192.168.1.184:8087/api/utilisateur/login', {email, motDePasse})
   }
 
 }

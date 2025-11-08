@@ -1,0 +1,48 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="myDrawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span style="flex: auto"></span>
+  <button mat-button routerLink="/admin/home">Home</button>
+  <button mat-button routerLink="/admin/contacts">Contacts</button>
+  <button mat-button [matMenuTriggerFor]="list">
+    <mat-icon iconPositionEnd>keyboard_arrow_down</mat-icon>
+    Formations
+  </button>
+  <mat-menu #list>
+    <button mat-button routerLink="/admin/formations">Liste Formations</button>
+    <button mat-button routerLink="/admin/inscription">Liste Inscriptions</button>
+  </mat-menu>
+  <button mat-raised-button color="accent" (click)="logout()">LogOut</button>
+</mat-toolbar>
+<mat-drawer-container>
+  <mat-drawer #myDrawer opened="true" mode="side" position="start">
+    <mat-list>
+      <mat-list-item>
+        <button mat-button routerLink="/admin/dashboard">
+          <mat-icon>dashboard</mat-icon>
+          Dashboard
+        </button>
+      </mat-list-item>
+      <mat-list-item>
+        <button mat-button routerLink="/admin/notification">
+          <mat-icon>dashboard</mat-icon>
+          Liste Notifications
+        </button>
+      </mat-list-item>
+      <mat-list-item>
+        <button mat-button routerLink="/admin/paiements">
+          <mat-icon>dashboard</mat-icon>
+          Liste Paiements
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div style="min-height: 600px">
+      <router-outlet>
+
+      </router-outlet>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

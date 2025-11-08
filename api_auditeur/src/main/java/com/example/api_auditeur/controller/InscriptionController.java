@@ -1,48 +1,191 @@
 package com.example.api_auditeur.controller;
 
+import com.example.api_auditeur.dto.CreateInscriptionRequest;
+import com.example.api_auditeur.dto.InscriptionAvecPaiementRequest;
+import com.example.api_auditeur.dto.InscriptionDto;
 import com.example.api_auditeur.model.Inscription;
 import com.example.api_auditeur.model.Paiement;
+import com.example.api_auditeur.model.page_enum.EtatInscription;
 import com.example.api_auditeur.service.InscriptionService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController @AllArgsConstructor
 @RequestMapping("/api/inscription")
-@CrossOrigin("*")
+//@CrossOrigin(origins = "http://localhost:4200")
 public class InscriptionController {
 
-    private InscriptionService inscriptionService;
+    private final InscriptionService inscriptionService;
 
-    @PostMapping("/soumettre")
-    public ResponseEntity<Inscription> soumettre(
-            @RequestParam Long utilisateurId,
-            @RequestParam Long formationId,
-            @RequestBody Paiement paiement){
-        Inscription inscription = inscriptionService.soumettreInscription(utilisateurId, formationId,paiement);
-        return ResponseEntity.status(HttpStatus.CREATED).body(inscription);
+    // CREATE - Inscription simple
+    @PostMapping
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> creerInscription(@Valid @RequestBody CreateInscriptionRequest request) {
+        try {
+            InscriptionDto created = inscriptionService.creerInscription(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
-    @PutMapping("/valider/{id}")
-   // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Inscription> valider(@PathVariable Long id){
-        Inscription inscription = inscriptionService.validerInscription(id);
-        return ResponseEntity.ok(inscription);
+    // CREATE - Inscription avec paiement
+    @PostMapping("/avec-paiement")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> creerInscriptionAvecPaiement(
+            @Valid @RequestBody InscriptionAvecPaiementRequest request) {
+        try {
+            InscriptionDto created = inscriptionService.creerInscriptionAvecPaiement(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
-    @PutMapping("/rejeter/{id}")
-   // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Inscription> rejeter(@PathVariable Long id){
-        Inscription inscription = inscriptionService.rejeterInscription(id);
-        return ResponseEntity.ok(inscription);
+    // READ - Get by ID
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> getInscriptionById(@PathVariable Long id) {
+        try {
+            InscriptionDto inscription = inscriptionService.getInscriptionById(id);
+            return ResponseEntity.ok(inscription);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    @PostMapping("/mettre-en-attente")
-    public ResponseEntity<Inscription> mettreEnAttente(@RequestParam Long utilisateurId,
-                                                       @RequestParam Long formationId) {
-        Inscription inscription = inscriptionService.mettreEnAttente(utilisateurId, formationId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(inscription);
+    // READ - Get All
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<InscriptionDto>> getAllInscriptions() {
+        List<InscriptionDto> inscriptions = inscriptionService.getAllInscriptions();
+        return ResponseEntity.ok(inscriptions);
+    }
+
+    // READ - Par Formation
+    @GetMapping("/formation/{formationId}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<InscriptionDto>> getInscriptionsByFormation(@PathVariable Long formationId) {
+        List<InscriptionDto> inscriptions = inscriptionService.getInscriptionsByFormation(formationId);
+        return ResponseEntity.ok(inscriptions);
+    }
+
+    // READ - Par Utilisateur
+    @GetMapping("/utilisateur/{utilisateurId}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<InscriptionDto>> getInscriptionsByUtilisateur(@PathVariable Long utilisateurId) {
+        List<InscriptionDto> inscriptions = inscriptionService.getInscriptionsByUtilisateur(utilisateurId);
+        return ResponseEntity.ok(inscriptions);
+    }
+
+    // READ - Par État
+    @GetMapping("/etat/{etat}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<InscriptionDto>> getInscriptionsByEtat(@PathVariable EtatInscription etat) {
+        List<InscriptionDto> inscriptions = inscriptionService.getInscriptionsByEtat(etat);
+        return ResponseEntity.ok(inscriptions);
+    }
+
+    // READ - Inscriptions du jour
+    @GetMapping("/aujourd-hui")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<InscriptionDto>> getInscriptionsDuJour() {
+        List<InscriptionDto> inscriptions = inscriptionService.getInscriptionsDuJour();
+        return ResponseEntity.ok(inscriptions);
+    }
+
+    // UPDATE - Modifier l'état
+    @PatchMapping("/{id}/etat")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> modifierEtat(
+            @PathVariable Long id,
+            @RequestParam EtatInscription etat) {
+        try {
+            InscriptionDto updated = inscriptionService.modifierEtat(id, etat);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // UPDATE - Confirmer
+    @PatchMapping("/{id}/confirmer")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> confirmerInscription(@PathVariable Long id) {
+        try {
+            InscriptionDto confirmed = inscriptionService.confirmerInscription(id);
+            return ResponseEntity.ok(confirmed);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // UPDATE - Annuler
+    @PatchMapping("/{id}/annuler")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> annulerInscription(@PathVariable Long id) {
+        try {
+            InscriptionDto annule = inscriptionService.annulerInscription(id);
+            return ResponseEntity.ok(annule);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // UPDATE - Associer un paiement
+    @PatchMapping("/{inscriptionId}/paiement/{paiementId}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> associerPaiement(
+            @PathVariable Long inscriptionId,
+            @PathVariable Long paiementId) {
+        try {
+            InscriptionDto updated = inscriptionService.associerPaiement(inscriptionId, paiementId);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Void> supprimerInscription(@PathVariable Long id) {
+        try {
+            inscriptionService.supprimerInscription(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // STATISTIQUES
+
+    // Compter les inscriptions d'une formation
+    @GetMapping("/formation/{formationId}/count")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Long>> countInscriptionsByFormation(@PathVariable Long formationId) {
+        Long count = inscriptionService.countInscriptionsByFormation(formationId);
+        Map<String, Long> response = new HashMap<>();
+        response.put("nombreInscriptions", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // Inscriptions par formation et état
+    @GetMapping("/formation/{formationId}/etat/{etat}")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<InscriptionDto>> getInscriptionsByFormationEtEtat(
+            @PathVariable Long formationId,
+            @PathVariable EtatInscription etat) {
+        List<InscriptionDto> inscriptions = inscriptionService.getInscriptionsByFormationEtEtat(formationId, etat);
+        return ResponseEntity.ok(inscriptions);
     }
 
 }

@@ -1,25 +1,42 @@
-<div class="p-3">
-  <div class="card">
-    <div class="card-header">FORMATIONS</div>
-    <div class="card-body">
-      <h2>Formations</h2>
-      <div class="row">
-        <div class="col-md-4 mb-3" *ngFor="let formation of formations">
-          <a [routerLink]="['/formations', formation.id]" class="text-decoration-none">
-            <div class="card h-100 shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">{{ formation.titre }}</h5>
-                <p class="card-text">{{ formation.description }}</p>
-              </div>
-              <div class="card-footer text-end">
-                <i class="fas fa-eye me-1"></i> Voir détail
-                <span class="badge bg-primary rounded-pill">{{ formation.capacite }}</span>
-              </div>
-            </div>
-          </a>
+<div class="container mt-4">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>FORMATIONS</mat-card-title>
+      <button mat-raised-button color="primary" [routerLink]="['/admin/formations/nouvelle']">
+        + Ajouter une formation
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="formations.length > 0; else noData">
+        <div *ngFor="let formation of formations" class="mb-3">
+          <mat-card class="shadow-sm">
+            <mat-card-header>
+              <mat-card-title>{{ formation.titre }}</mat-card-title>
+              <mat-card-subtitle>
+                {{ formation.typeFormation }} - {{ formation.niveauFormation }}
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p>{{ formation.description }}</p>
+              <p><strong>Début :</strong> {{ formation.dateDebut | date:'longDate' }}</p>
+              <p><strong>Fin :</strong> {{ formation.dateFin | date:'longDate' }}</p>
+              <p><strong>Capacité :</strong> {{ formation.capacite }} personnes</p>
+              <p><strong>Tarif :</strong> {{ formation.tarif }} FCFA</p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-raised-button color="primary"
+                      *ngIf="formation.id !== undefined"
+                      (click)="inscrire(formation.id!)">
+                S'inscrire
+              </button>
+              <button mat-button color="accent" [routerLink]="['/formations', formation.id]">Modifier</button>
+            </mat-card-actions>
+          </mat-card>
         </div>
       </div>
-
-    </div>
-  </div>
+      <ng-template #noData>
+        <p>Aucune formation disponible pour le moment.</p>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
 </div>

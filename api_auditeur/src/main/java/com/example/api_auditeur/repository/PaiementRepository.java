@@ -24,4 +24,18 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
     @Query("SELECT SUM(p.montant) FROM Paiement p WHERE p.statutPaiement = :statut")
     Double calculateTotalMontantByStatut(StatutPaiement statut);
+
+    //aujourd'hui
+    @Query("SELECT p FROM Paiement p WHERE p.datePaiement = CURRENT_DATE")
+    List<Paiement> findPaiementsDuJour();
+
+    @Query("SELECT SUM(p.montant) FROM Paiement p WHERE p.statutPaiement = 'VALIDE'")
+    Double calculerTotalPaiementsValides();
+
+    @Query("SELECT SUM(p.montant) FROM Paiement p WHERE p.statutPaiement = 'VALIDE' AND p.datePaiement BETWEEN ?1 AND ?2")
+    Double calculerTotalPeriode(LocalDate debut, LocalDate fin);
+
+    Optional<Paiement> findByNumPaiement(String numPaiement);
+
+    long count();
 }

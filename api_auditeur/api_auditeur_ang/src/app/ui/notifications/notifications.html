@@ -1,1 +1,25 @@
-<p>notifications works!</p>
+<div class="container mt-4">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Notifications</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="notifications.length > 0; else noData">
+        <div *ngFor="let notif of notifications" class="mb-3">
+          <mat-card class="shadow-sm">
+            <mat-card-header>
+              <mat-card-title>{{ notif.objet }}</mat-card-title>
+              <mat-card-subtitle>{{ notif.dateEnvoi | date:'short' }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p>{{ notif.contenu }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <ng-template #noData>
+        <p>Aucune notification disponible.</p>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>

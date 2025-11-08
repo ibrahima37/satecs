@@ -1,121 +1,63 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UtilisateurService } from '../../services/utilisateur.service';
+import { AuthService } from '../../services/auth.service';
 import { InscriptionService } from '../../services/inscription.service';
 import { FormationService } from '../../services/formation.service';
-import { Formation, NiveauFormation } from '../../models/formation';
-import { ModePaiement } from '../../models/paiement';
-import { EtatInscription } from '../../models/inscriptions';
+import { InscriptionRequest } from '../../models/utilisateur';
+import { Formation } from '../../models/formation';
+import { CreateInscriptionRequest } from '../../models/inscriptions';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+
 
 @Component({
   selector: 'app-inscriptions',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatSelectModule, MatInputModule ],
   templateUrl: './inscriptions.html',
   styleUrls: ['./inscriptions.css']
 })
 
 export class Inscriptions implements OnInit{
 
-  form!: FormGroup;
-
-  etatInscriptionOptions = Object.values(EtatInscription);
-  niveauFormationOptions = Object.values(NiveauFormation);
-  paiement = Object.values(ModePaiement);
-
-  formation!: Formation;
-  errorMessage: string = '';
-  successMessage: string = '';
-  recapitulatif: any = null;
-  isAuthentificated: boolean = false;
-  currentUtilisateur: any;
+  loginForm: FormGroup;
+  formations: Formation[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private utilisateurService: UtilisateurService,
+    private formationService: FormationService,
     private inscriptionService: InscriptionService,
-    private formationService: FormationService
-  ){}
-
-  ngOnInit(): void{
-     this.form = this.fb.group({
-
-      nom: ['', Validators.required],
-      prenom: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      telephone: ['', Validators.required],
-
-      formationId: ['', Validators.required],
-      utilisateurId: ['', Validators.required],
-      dateInscription: [this.getToday(), Validators.required],
-      etatInscription: ["VALIDER", Validators.required],
-      niveauFormation: ['DEBUTANT', Validators.required],
-      paiement: ['', Validators.required]
-    });
-
-    const formationId = this.route.snapshot.queryParamMap.get('formationId');
-
-    if(formationId){
-      this.form.patchValue({ formationId });
-      this.formationService.getFormationById(+formationId).subscribe({
-        next: (data: Formation) => {
-          this.formation = data;
-        },
-        error: (err: any) => {
-          this.errorMessage = 'Erreur : ' + (err?.message ?? 'Erreur inconnue');
-        }
-      });
-    }
-    this.checkAutentification();
-  }
-  checkAutentification(): void{
-    this.utilisateurService.isLoggedIn().subscribe(isLoggedIn => {
-      this.isAuthentificated = isLoggedIn;
-      if(isLoggedIn){
-        this.utilisateurService.getCurrentUtilisateur().subscribe(utilisateur =>{
-          this.currentUtilisateur = utilisateur;
-          this.form.patchValue({ utilisateurId: utilisateur.id});
-        });
-      }
+    private auth: AuthService
+  ) {
+    this.loginForm = this.fb.group({
+      prenom: [''],
+      nom: [''],
+      tel: [''],
+      email: [''],
+      motDePasse: [''],
+      formationId: [null],
+      utilisateurId: [null]
     });
   }
 
-  //Redirige vers la page connexion
-  redirectToLogin(): void{
-    this.router.navigate(['/login'], {
-      queryParams: {returnUrl: this.router.url}
+  ngOnInit(): void {
+    const utilisateurId = this.auth.getCurrentUser(); // méthode à créer si nécessaire
+    this.loginForm.patchValue({ utilisateurId });
+
+    this.formationService.getAllFormations().subscribe({
+      next: (data: any) => this.formations = data,
+      error: (err: any) => console.error('Erreur chargement formations', err)
     });
   }
 
-  getToday(): string{
-    const today = new Date();
-    return today.toISOString().slice(0, 10);
-  }
-
-  soumettre(): void{
-    if(this.form.invalid){
-      console.log('Formulaire invalide :', this.form.value);
-      this.errorMessage = "Formulaire Invalide";
-      return;
-    }
-      if (!this.isAuthentificated) {
-      this.errorMessage = 'Vous devez être connecté pour vous inscrire.';
-      return;
-      }
-
-    this.inscriptionService.soumettreInscription(this.form.value).subscribe({
-      next: (data: any) => {
-        this.successMessage = 'Inscription Enregistrée';
-        this.recapitulatif = this.form.value;
-        console.log('Récapitulatif :', this.recapitulatif);
-      },
-      error: (err: any) => {
-        this.errorMessage = 'Erreur : ' +(err?.message ?? 'Erreur inconnue');
-      }
+  inscrire(): void {
+    const inscriptionData = this.loginForm.value;
+    this.inscriptionService.inscrire(inscriptionData).subscribe({
+      next: () => console.log('Inscription réussie'),
+      error: (err: any) => console.error('Erreur inscription', err)
     });
   }
 }

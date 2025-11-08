@@ -1,204 +1,210 @@
 package com.example.api_auditeur.controller;
 
+import com.example.api_auditeur.dto.CreatePaiementRequest;
+import com.example.api_auditeur.dto.PaiementDto;
 import com.example.api_auditeur.model.Paiement;
 import com.example.api_auditeur.model.page_enum.ModePaiement;
 import com.example.api_auditeur.model.page_enum.StatutPaiement;
 import com.example.api_auditeur.service.PaiementService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/api/paiement")
 @AllArgsConstructor @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PaiementController {
 
     private final PaiementService paiementService;
 
-    // ✅ Enregistrer
-    @PostMapping("/enregistrer")
-    public ResponseEntity<Paiement> enregistrer(@RequestBody Paiement paiement) {
-        Paiement saved = paiementService.enregistrerPaiement(paiement);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
-
-    // ✅ Valider
-    @PutMapping("/valider/{id}")
-    public ResponseEntity<Paiement> valider(@PathVariable Long id) {
-        Paiement paiement = paiementService.validerPaiement(id);
-        return ResponseEntity.ok(paiement);
-    }
-
-    // ✅ Annuler
-    @PutMapping("/annuler/{id}")
-    public ResponseEntity<Paiement> annuler(@PathVariable Long id) {
-        Paiement paiement = paiementService.annulerPaiement(id);
-        return ResponseEntity.ok(paiement);
-    }
-
-    // ✅ Rembourser
-    @PutMapping("/rembourser/{id}")
-    public ResponseEntity<Paiement> rembourser(@PathVariable Long id) {
-        Paiement paiement = paiementService.rembourserPaiement(id);
-        return ResponseEntity.ok(paiement);
-    }
-
-    // Récupérer tous les paiements
-    @GetMapping
-    public ResponseEntity<List<Paiement>> getAllPaiements() {
-        List<Paiement> paiements = paiementService.getAllPaiements();
-        return ResponseEntity.ok(paiements);
-    }
-
-    // Récupérer un paiement par ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Paiement> getPaiementById(@PathVariable Long id) {
-        return paiementService.getPaiementById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Récupérer un paiement par numéro de transaction
-    @GetMapping("/transaction/{numTransaction}")
-    public ResponseEntity<Paiement> getPaiementByNumTransaction(@PathVariable String numTransaction) {
-        return paiementService.getPaiementByNumTransaction(numTransaction)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Créer un nouveau paiement
+    // CREATE
     @PostMapping
-    public ResponseEntity<Paiement> createPaiement(@RequestBody Paiement paiement) {
-        Paiement newPaiement = paiementService.createPaiement(paiement);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newPaiement);
-    }
-
-    // Mettre à jour un paiement
-    @PutMapping("/{id}")
-    public ResponseEntity<Paiement> updatePaiement(
-            @PathVariable Long id,
-            @RequestBody Paiement paiementDetails) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> creerPaiement(@Valid @RequestBody CreatePaiementRequest request) {
         try {
-            Paiement updatedPaiement = paiementService.updatePaiement(id, paiementDetails);
-            return ResponseEntity.ok(updatedPaiement);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Mettre à jour le statut d'un paiement
-    @PatchMapping("/{id}/statut")
-    public ResponseEntity<?> updateStatutPaiement(
-            @PathVariable Long id,
-            @RequestBody Map<String, StatutPaiement> request) {
-        try {
-            if (!request.containsKey("statut")) {
-                return ResponseEntity.badRequest()
-                        .body("Le champ 'statut' est requis");
-            }
-            StatutPaiement statut = request.get("statut");
-            if (statut == null) {
-                return ResponseEntity.badRequest()
-                        .body("Le statut ne peut pas être null");
-            }
-
-            Paiement updatedPaiement = paiementService.updateStatutPaiement(id, statut);
-            return ResponseEntity.ok(updatedPaiement);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body("Statut invalide: " + e.getMessage());
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Supprimer un paiement
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePaiement(@PathVariable Long id) {
-        try {
-            paiementService.deletePaiement(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Récupérer les paiements par statut
-    @GetMapping("/statut/{statut}")
-    public ResponseEntity<List<Paiement>> getPaiementsByStatut(@PathVariable StatutPaiement statut) {
-        List<Paiement> paiements = paiementService.getPaiementsByStatut(statut);
-        return ResponseEntity.ok(paiements);
-    }
-
-    // Récupérer les paiements par mode de paiement
-    @GetMapping("/mode/{mode}")
-    public ResponseEntity<List<Paiement>> getPaiementsByMode(@PathVariable ModePaiement modePaiement) {
-        List<Paiement> paiements = paiementService.getPaiementsByMode(modePaiement);
-        return ResponseEntity.ok(paiements);
-    }
-
-    // Récupérer les paiements par période
-    @GetMapping("/periode")
-    public ResponseEntity<List<Paiement>> getPaiementsByPeriode(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
-        List<Paiement> paiements = paiementService.getPaiementsByPeriode(dateDebut, dateFin);
-        return ResponseEntity.ok(paiements);
-    }
-
-    // Calculer le montant total des paiements
-    @GetMapping("/total")
-    public ResponseEntity<Double> getTotalMontant() {
-        Double total = paiementService.getTotalMontant();
-        return ResponseEntity.ok(total != null ? total : 0.0);
-    }
-
-    // Calculer le montant total par statut
-    @GetMapping("/total/statut/{statut}")
-    public ResponseEntity<Double> getTotalMontantByStatut(@PathVariable StatutPaiement statut) {
-        Double total = paiementService.getTotalMontantByStatut(statut);
-        return ResponseEntity.ok(total != null ? total : 0.0);
-    }
-
-    // Valider un paiement
-    @PostMapping("/{id}/valider")
-    public ResponseEntity<Paiement> validerPaiement(@PathVariable Long id) {
-        try {
-            Paiement paiement = paiementService.validerPaiement(id);
-            return ResponseEntity.ok(paiement);
+            PaiementDto created = paiementService.creerPaiement(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
-    // Rejeter un paiement
-    @PostMapping("/{id}/rejeter")
-    public ResponseEntity<Paiement> rejeterPaiement(@PathVariable Long id) {
+    // READ - Get by ID
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> getPaiementById(@PathVariable Long id) {
         try {
-            Paiement paiement = paiementService.rejeterPaiement(id);
+            PaiementDto paiement = paiementService.getPaiementById(id);
             return ResponseEntity.ok(paiement);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    // Rembourser un paiement
-    @PostMapping("/{id}/rembourser")
-    public ResponseEntity<Paiement> rembourserPaiement(@PathVariable Long id) {
+    // READ - Get by Numéro de Paiement
+    @GetMapping("/numero/{numPaiement}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> getPaiementByNumPaiement(@PathVariable String numPaiement) {
         try {
-            Paiement paiement = paiementService.rembourserPaiement(id);
+            PaiementDto paiement = paiementService.getPaiementByNumPaiement(numPaiement);
             return ResponseEntity.ok(paiement);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    // READ - Get by Numéro de Transaction
+    @GetMapping("/transaction/{numTransaction}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> getPaiementByNumTransaction(@PathVariable String numTransaction) {
+        try {
+            PaiementDto paiement = paiementService.getPaiementByNumTransaction(numTransaction);
+            return ResponseEntity.ok(paiement);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    // READ - Get All
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<PaiementDto>> getAllPaiements() {
+        List<PaiementDto> paiements = paiementService.getAllPaiements();
+        return ResponseEntity.ok(paiements);
+    }
+
+    // UPDATE
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> modifierPaiement(
+            @PathVariable Long id,
+            @Valid @RequestBody PaiementDto paiementDto) {
+        try {
+            PaiementDto updated = paiementService.modifierPaiement(id, paiementDto);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    // UPDATE - Valider
+    @PatchMapping("/{id}/valider")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> validerPaiement(@PathVariable Long id) {
+        try {
+            PaiementDto validated = paiementService.validerPaiement(id);
+            return ResponseEntity.ok(validated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // UPDATE - Annuler
+    @PatchMapping("/{id}/annuler")
+    @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> annulerPaiement(
+            @PathVariable Long id,
+            @RequestParam(required = false) String motif) {
+        try {
+            PaiementDto annule = paiementService.annulerPaiement(id, motif);
+            return ResponseEntity.ok(annule);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // UPDATE - Marquer échoué
+    @PatchMapping("/{id}/echoue")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PaiementDto> marquerEchoue(@PathVariable Long id) {
+        try {
+            PaiementDto echoue = paiementService.marquerEchoue(id);
+            return ResponseEntity.ok(echoue);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Void> supprimerPaiement(@PathVariable Long id) {
+        try {
+            paiementService.supprimerPaiement(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // RECHERCHES AVANCÉES
+
+    // Filtrer par statut
+    @GetMapping("/statut/{statut}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<PaiementDto>> getPaiementsByStatut(@PathVariable StatutPaiement statut) {
+        List<PaiementDto> paiements = paiementService.getPaiementsByStatut(statut);
+        return ResponseEntity.ok(paiements);
+    }
+
+    // Filtrer par mode de paiement
+    @GetMapping("/mode/{mode}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<PaiementDto>> getPaiementsByMode(@PathVariable ModePaiement mode) {
+        List<PaiementDto> paiements = paiementService.getPaiementsByMode(mode);
+        return ResponseEntity.ok(paiements);
+    }
+
+    // Filtrer par période
+    @GetMapping("/periode")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<PaiementDto>> getPaiementsByPeriode(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate debut,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin) {
+        List<PaiementDto> paiements = paiementService.getPaiementsByPeriode(debut, fin);
+        return ResponseEntity.ok(paiements);
+    }
+
+    // Paiements du jour
+    @GetMapping("/aujourd-hui")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<PaiementDto>> getPaiementsDuJour() {
+        List<PaiementDto> paiements = paiementService.getPaiementsDuJour();
+        return ResponseEntity.ok(paiements);
+    }
+
+    // STATISTIQUES
+
+    // Total des paiements validés
+    @GetMapping("/statistiques/total-valides")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Double>> getTotalPaiementsValides() {
+        Double total = paiementService.calculerTotalPaiementsValides();
+        Map<String, Double> response = new HashMap<>();
+        response.put("totalValides", total);
+        return ResponseEntity.ok(response);
+    }
+
+    // Total pour une période
+    @GetMapping("/statistiques/total-periode")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Double>> getTotalPeriode(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate debut,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin) {
+        Double total = paiementService.calculerTotalPeriode(debut, fin);
+        Map<String, Double> response = new HashMap<>();
+        response.put("totalPeriode", total);
+        response.put("debut", (double) debut.toEpochDay());
+        response.put("fin", (double) fin.toEpochDay());
+        return ResponseEntity.ok(response);
     }
 }
