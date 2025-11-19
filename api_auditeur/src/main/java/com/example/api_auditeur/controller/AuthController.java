@@ -39,22 +39,6 @@ public class AuthController {
         ));
     }
 
-//    @PostMapping("/token")
-//    public ResponseEntity<?> generateToken(@RequestBody Utilisateur request) {
-//        System.out.println(">>> Tentative d'authentification pour : " + request.getEmail());
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getMotDePasse())
-//        );
-//
-//        List<String> roles = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .map(r -> r.replace("", "")) //ajout
-//                .toList();
-//
-//        String token = JwtUtil.generateToken(request.getEmail(), roles); // ou "ADMIN"
-//        return ResponseEntity.ok(Map.of("token", token, "roles",roles));
-//    }
-
     @GetMapping("/whoami")
     public ResponseEntity<?> whoami(Authentication authentication) {
         return ResponseEntity.ok(authentication.getAuthorities());

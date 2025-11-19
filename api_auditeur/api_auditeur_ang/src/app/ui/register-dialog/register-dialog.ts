@@ -10,6 +10,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../../services/utilisateur.service';
+import { AuthResponse } from '../../models/utilisateur';
 
 @Component({
   selector: 'app-register-dialog',
@@ -29,6 +30,7 @@ export class RegisterDialog {
 
   registerForm: FormGroup;
   loading: boolean = false;
+  message: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -50,17 +52,20 @@ export class RegisterDialog {
     const request = this.registerForm.value;
 
     this.authService.inscription(request).subscribe({
-      next: () => {
-        // 🔐 Connexion automatique après inscription
+      next: (reponse: AuthResponse) => {
+        const utilisateur = reponse.user;
+        this.message = `Bienvenue ${utilisateur.nom}, votre compte a été créé !`;
+        // Connexion automatique après inscription
         this.authService.connexion({
           email: request.email,
           motDePasse: request.motDePasse
         }).subscribe({
-          next: (response) => {
+          next: (response: AuthResponse) => {
             console.log('Connexion réussie', response);
             this.loading = false;
-            this.utilisateurService.setUtilisateurConnect(response.utilisateur);
-            localStorage.setItem('token', response.token);
+            this.authService.handleAuthResponse(response);
+            //this.utilisateurService.setUtilisateurConnect(response.utilisateur);
+            //localStorage.setItem('token', response.token);
             this.router.navigate(['/admin']);
             this.dialogRef.close();
           },

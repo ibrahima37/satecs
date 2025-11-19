@@ -1,0 +1,27 @@
+.page {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fafafa;
+}
+
+.card {
+  max-width: 560px;
+  width: 100%;
+}
+
+.icon {
+  font-size: 40px;
+  margin-right: 8px;
+}
+mat-card-title {
+  font-weight: 600;
+}
+mat-card-subtitle {
+  margin-top: 4px;
+}
+mat-card-content p {
+  margin: 12px 0 0;
+  color: #555;
+}

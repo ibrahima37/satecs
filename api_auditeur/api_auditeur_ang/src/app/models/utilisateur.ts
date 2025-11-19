@@ -1,4 +1,4 @@
-import { Inscriptions } from './inscriptions';
+import { Inscription } from './inscriptions';
 
 export interface Utilisateur{
   id?: number;
@@ -7,7 +7,7 @@ export interface Utilisateur{
   prenom: string;
   motDePasse?: string;
   role: Role;
-  inscriptionList?: Inscriptions[];
+  inscriptionList?: Inscription[];
 }
 
 export enum Role {
@@ -30,6 +30,6 @@ export interface ConnexionRequest {
 
 export interface AuthResponse {
   message: string;
-  utilisateur: Utilisateur;
+  user: Utilisateur;
   token: string;
 }

@@ -1,0 +1,59 @@
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-display-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  padding: 8px 16px;
+  font-weight: bold;
+  font-size: 18px;
+  margin-left: auto;
+
+  background: linear-gradient(270deg, #1976d2, #2196f3, #1976d2);
+  background-size: 500% 600%;
+  animation: gradientShift 8s ease infinite;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  border-radius: 20px;
+  transition: transform 0.3s ease;
+}
+
+.user-name {
+  font-size: 22px;
+}
+
+.spacer {
+  flex: 1;
+}
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 8px;
+  flex-wrap: wrap;
+}
+
+.custom-drawer {
+  background-color: #0D47A1; /* vert foncé */
+  color: white;              /* texte blanc */
+  padding: 10px;
+}
+
+.custom-drawer mat-list-item button {
+  color: white; /* texte des boutons en blanc */
+}
+
+.custom-drawer mat-icon {
+  color: #BBDEFB; /* vert clair pour les icônes */
+  margin-right: 8px;
+}
+
+.custom-drawer mat-list-item:hover {
+  background-color: #1565C0; /* vert un peu plus clair au survol */
+  border-radius: 5px;
+}

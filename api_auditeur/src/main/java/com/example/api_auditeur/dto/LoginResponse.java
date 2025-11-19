@@ -15,15 +15,5 @@ public class LoginResponse {
     private String token;
     private Utilisateur user;
 
-//    public LoginResponse(UserDetails userDetails) {
-//        this.user = new Utilisateur();
-//        this.user.setEmail(userDetails.getUsername());
-//
-//        if (!userDetails.getAuthorities().isEmpty()) {
-//            this.user.setRole(Role.valueOf(userDetails.getAuthorities().iterator().next().getAuthority()));
-//        }
-//
-//        this.token = null; // ou autre logique
-//    }
 }
 

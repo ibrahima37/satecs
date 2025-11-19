@@ -10,29 +10,22 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class InscriptionDto {
+
     private Long id;
-    private LocalDate dateInscription;
+
+    private Long formationId;
+    private Long utilisateurId;
+    private Long paiementId;
+
+    private String dateInscription;
     private EtatInscription etatInscription;
 
-    // Informations de la formation
-    private Long formationId;
-    private String formationTitre;
-    private LocalDate formationDateDebut;
-    private LocalDate formationDateFin;
-    private Double formationTarif;
+    private String numeroCni;
+    private String dateNaissance;
+    private String address;
+    private String numeroTel;
 
-    // Informations de l'utilisateur
-    private Long utilisateurId;
-    private String utilisateurNom;
-    private String utilisateurPrenom;
-    private String utilisateurEmail;
-
-    // Informations du paiement
-    private Long paiementId;
-    private String paiementNumPaiement;
-    private Double paiementMontant;
-    private String paiementStatut;
+    private String fichier;
 }

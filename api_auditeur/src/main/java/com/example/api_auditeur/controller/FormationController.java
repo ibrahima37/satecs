@@ -18,7 +18,6 @@ import java.util.List;
 
 @RequestMapping("/api/formation")
 @RestController @AllArgsConstructor @Data
-//@CrossOrigin(origins = "*")
 public class FormationController {
 
     private FormationService formationService;

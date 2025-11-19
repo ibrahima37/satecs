@@ -1,0 +1,88 @@
+<h2 mat-dialog-title>Nouvelle Inscription</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="registerForm" (ngSubmit)="submitInscription()" class="form-container">
+
+    <div class="user-display-top" *ngIf="currentUser$ | async as user">
+      <mat-icon>person</mat-icon>
+      <span class="user-name">{{ user.prenom }} {{ user.nom }}</span>
+      <span class="user-email">{{ user.email }}</span>
+    </div>
+
+    <!-- Numéro CNI -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Numéro CNI</mat-label>
+      <input matInput formControlName="numeroCni" placeholder="Entrez votre numéro CNI" />
+      <mat-error *ngIf="registerForm.get('numeroCni')?.hasError('required')">
+        Numéro CNI obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Date de naissance -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de naissance</mat-label>
+      <input matInput type="date" formControlName="dateNaissance" />
+      <mat-error *ngIf="registerForm.get('dateNaissance')?.hasError('required')">
+        Date de naissance obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Adresse -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Adresse</mat-label>
+      <input matInput formControlName="address" placeholder="Entrez votre adresse" />
+      <mat-error *ngIf="registerForm.get('address')?.hasError('required')">
+        Adresse obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>État de l'inscription</mat-label>
+      <mat-select formControlName="etatInscription">
+        <mat-option [value]="EtatInscription.DOCUMENTS_EN_ATTENTE">Document En Attente</mat-option>
+        <mat-option [value]="EtatInscription.PAIEMENT_EN_ATTENTE">Paiement en attente</mat-option>
+
+        <ng-container *ngIf="(currentUser$ | async)?.role === 'ADMIN' || (currentUser$ | async)?.role === 'SUPER_ADMIN'">
+          <mat-option [value]="EtatInscription.EN_COURS_VALIDATION">En Cours de Validation</mat-option>
+          <mat-option [value]="EtatInscription.ANNULEE">Annuler</mat-option>
+          <mat-option [value]="EtatInscription.REJETER">Rejeter</mat-option>
+          <mat-option [value]="EtatInscription.VALIDER">Valider</mat-option>
+        </ng-container>
+      </mat-select>
+      <mat-error *ngIf="registerForm.get('etatInscription')?.hasError('required')">
+        État obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Numéro de téléphone -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Numéro de téléphone</mat-label>
+      <input matInput formControlName="numeroTel" placeholder="Entrez votre numéro de téléphone" />
+      <mat-error *ngIf="registerForm.get('numeroTel')?.hasError('required')">
+        Numéro de téléphone obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Upload fichier -->
+    <div class="file-upload">
+      <label for="fileInput">Pièce jointe :</label>
+      <input id="fileInput" type="file" (change)="onFileSelected($event)" />
+    </div>
+
+    <!-- Message d'erreur ou succès -->
+    <div *ngIf="message" class="message">
+      {{ message }}
+    </div>
+
+    <!-- Boutons -->
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+        <mat-icon>save</mat-icon> S'inscrire
+      </button>
+      <button mat-button mat-dialog-close>
+        Annuler
+      </button>
+    </div>
+
+  </form>
+</mat-dialog-content>

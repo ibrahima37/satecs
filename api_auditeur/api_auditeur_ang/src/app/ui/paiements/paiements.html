@@ -1,8 +1,61 @@
-<div class="container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>PAIEMENTS</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>Paiements</mat-card-content>
-  </mat-card>
-</div>
+<mat-card class="inscription-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon color="accent" style="vertical-align: middle; margin-right: 8px;">payments</mat-icon>
+      Liste des Paiements
+    </mat-card-title>
+    <mat-card-subtitle>Visualisez tous les paiements enregistrés</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <table mat-table class="mat-table-custom" [dataSource]="paiements" class="mat-elevation-z8 full-width">
+
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let paiement">{{ paiement.id }}</td>
+      </ng-container>
+
+      <!-- Date -->
+      <ng-container matColumnDef="datePaiement">
+        <th mat-header-cell *matHeaderCellDef>Date Paiement</th>
+        <td mat-cell *matCellDef="let paiement">{{ paiement.datePaiement | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <!-- Mode -->
+      <ng-container matColumnDef="modePaiement">
+        <th mat-header-cell *matHeaderCellDef>Mode Paiement</th>
+        <td mat-cell *matCellDef="let paiement">{{ paiement.modePaiement }}</td>
+      </ng-container>
+
+      <!-- Montant -->
+      <ng-container matColumnDef="montant">
+        <th mat-header-cell *matHeaderCellDef>Montant</th>
+        <td mat-cell *matCellDef="let paiement" class="currency">{{ paiement.montant | currency:'XOF' }}</td>
+      </ng-container>
+
+      <!-- Numéro de Paiement -->
+      <ng-container matColumnDef="numPaiement">
+        <th mat-header-cell *matHeaderCellDef>Num Paiement</th>
+        <td mat-cell *matCellDef="let paiement">{{ paiement.numPaiement }}</td>
+      </ng-container>
+
+      <!-- Numéro de Transaction -->
+      <ng-container matColumnDef="numTransaction">
+        <th mat-header-cell *matHeaderCellDef>Num Transaction</th>
+        <td mat-cell *matCellDef="let paiement">{{ paiement.numTransaction }}</td>
+      </ng-container>
+
+
+      <!-- Statut -->
+      <ng-container matColumnDef="statutPaiement">
+        <th mat-header-cell *matHeaderCellDef>Statut_Paiement</th>
+        <td mat-cell *matCellDef="let paiement">{{ paiement.statutPaiement }}</td>
+      </ng-container>
+
+      <!-- Header & Row -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>

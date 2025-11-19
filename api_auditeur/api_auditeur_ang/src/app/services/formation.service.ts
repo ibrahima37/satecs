@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 })
 export class FormationService {
 
-  private apiUrl = "http://192.168.1.109:9090/api/formation";
+  private apiUrl = "http://192.168.1.248:9090/api/formation";
 
   constructor(private http: HttpClient, public auth: AuthService){}
 

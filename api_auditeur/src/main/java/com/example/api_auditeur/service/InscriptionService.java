@@ -6,7 +6,6 @@ import com.example.api_auditeur.model.Inscription;
 import com.example.api_auditeur.model.Paiement;
 import com.example.api_auditeur.model.Utilisateur;
 import com.example.api_auditeur.model.page_enum.EtatInscription;
-import com.example.api_auditeur.model.page_enum.Role;
 import com.example.api_auditeur.model.page_enum.StatutPaiement;
 import com.example.api_auditeur.repository.FormationRepository;
 import com.example.api_auditeur.repository.InscriptionRepository;
@@ -14,9 +13,14 @@ import com.example.api_auditeur.repository.PaiementRepository;
 import com.example.api_auditeur.repository.UtilisateurRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,97 +28,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class InscriptionService {
-/*
-    private InscriptionRepository repository;
-
-    private UtilisateurRepository uRepository;
-
-    private FormationRepository fRepository;
-
-    private PaiementRepository paiementRepository;
-
-    public void sinscrie(
-            String nom,
-            String prenom,
-            String email,
-            String motDePasse,
-            Long formationId){
-
-        Utilisateur utilisateur= new Utilisateur();
-        utilisateur.setNom(nom);
-        utilisateur.setPrenom(prenom);
-        utilisateur.setEmail(email);
-        utilisateur.setRole(Role.ADMIN);
-        utilisateur.setMotDePasse(new BCryptPasswordEncoder().encode(motDePasse));
-        uRepository.save(utilisateur);
-
-        Formation formation = fRepository.findById(formationId)
-                .orElseThrow(()->new RuntimeException("Formation introuvable"));
-
-        Inscription inscription = new Inscription();
-        inscription.setUtilisateur(utilisateur);
-        inscription.setFormation(formation);
-        inscription.setDateInscription(LocalDate.now());
-        inscription.setEtatInscription(EtatInscription.ANNULEE);
-        //inscription.setPaiement();
-
-        repository.save(inscription);
-    }
-
-    public Inscription soumettreInscription(Long utilisateurId, Long formationId, Paiement paiement){
-        Utilisateur utilisateur = uRepository.findById(utilisateurId)
-                .orElseThrow(()-> new RuntimeException("Utilisateur introuvable"));
-        Formation formation = fRepository.findById(formationId)
-                .orElseThrow(()-> new RuntimeException("Formation introuvable"));
-
-        Paiement paiementEnregistre = paiementRepository.save(paiement);
-
-        Inscription inscription = new Inscription();
-        inscription.setUtilisateur(utilisateur);
-        inscription.setFormation(formation);
-        inscription.setEtatInscription(EtatInscription.DOCUMENTS_EN_ATTENTE);
-        inscription.setDateInscription(LocalDate.now());
-        inscription.setPaiement(paiementEnregistre);
-        return repository.save(inscription);
-    }
-
-    public Inscription validerInscription(Long inscriptionId){
-        Inscription inscription = repository.findById(inscriptionId)
-                .orElseThrow(()-> new RuntimeException("Inscription introuvable"));
-        inscription.setEtatInscription(EtatInscription.VALIDER);
-        inscription.setDateInscription(LocalDate.now());
-
-        return repository.save(inscription);
-    }
-
-    public Inscription rejeterInscription(Long inscriptionId){
-        Inscription inscription = repository.findById(inscriptionId)
-                .orElseThrow(()-> new RuntimeException("Inscription introuvable"));
-        inscription.setEtatInscription(EtatInscription.VALIDER);
-        inscription.setDateInscription(LocalDate.now());
-
-        return repository.save(inscription);
-    }
-
-    public Inscription mettreEnAttente(Long utilisateurId, Long formationId){
-        Utilisateur utilisateur = uRepository.findById(utilisateurId)
-                .orElseThrow(()-> new RuntimeException("Utilisateur introuvable"));
-        Formation formation = fRepository.findById(formationId)
-                .orElseThrow(()-> new RuntimeException("Formation introuvable"));
-
-        Paiement paiement = new Paiement();
-        paiement.setMontant(paiement.getMontant());
-        paiement.setDatePaiement(LocalDate.now());
-        paiement.setStatutPaiement(StatutPaiement.EN_ATTENTE);
-
-        Inscription inscription = new Inscription();
-        inscription.setUtilisateur(utilisateur);
-        inscription.setFormation(formation);
-        inscription.setEtatInscription(EtatInscription.DOCUMENTS_EN_ATTENTE);
-        inscription.setDateInscription(LocalDate.now());
-        inscription.setPaiement(paiement);
-        return repository.save(inscription);
-    }*/
 
     private final InscriptionRepository inscriptionRepository;
     private final FormationRepository formationRepository;
@@ -123,8 +36,32 @@ public class InscriptionService {
     private final PaiementService paiementService;
 
     // CREATE - Inscription simple
-    @Transactional
+
+    public String enregistrerFichier(MultipartFile fichier) {
+        if (fichier == null || fichier.isEmpty()) return null;
+
+        try {
+            // 📌 Nom unique : timestamp + nom original
+            String nomFichier = System.currentTimeMillis() + "_" + fichier.getOriginalFilename();
+
+            // 📁 Chemin absolu
+            Path chemin = Paths.get("fichier").resolve(nomFichier);
+            Files.createDirectories(chemin.getParent());
+
+            // 💾 Sauvegarde physique
+            Files.copy(fichier.getInputStream(), chemin, StandardCopyOption.REPLACE_EXISTING);
+
+            // 🌐 Générer une URL d’accès (exemple)
+            return "/fichier/" + nomFichier;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'enregistrement du fichier", e);
+        }
+    }
+
     public InscriptionDto creerInscription(CreateInscriptionRequest request) {
+        Inscription inscription = new Inscription();
+
         // Vérifier que la formation existe
         Formation formation = formationRepository.findById(request.getFormationId())
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
@@ -132,12 +69,6 @@ public class InscriptionService {
         // Vérifier que l'utilisateur existe
         Utilisateur utilisateur = utilisateurRepository.findById(request.getUtilisateurId())
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-
-        // Vérifier que l'utilisateur n'est pas déjà inscrit
-        if (inscriptionRepository.existsByFormationIdAndUtilisateurId(
-                request.getFormationId(), request.getUtilisateurId())) {
-            throw new RuntimeException("Cet utilisateur est déjà inscrit à cette formation");
-        }
 
         // Vérifier la capacité
         Long nombreInscrits = inscriptionRepository.countByFormationId(request.getFormationId());
@@ -150,22 +81,110 @@ public class InscriptionService {
             throw new RuntimeException("Cette formation a déjà commencé");
         }
 
+        if (request.getDateInscription() == null) {
+            request.setDateInscription(LocalDate.now());
+        }
+        if (request.getEtatInscription() == null) {
+            request.setEtatInscription(EtatInscription.EN_COURS_VALIDATION);
+        }
+
+        if (request.getFichier() != null && !request.getFichier().isEmpty()) {
+            String urlFichier = enregistrerFichier(request.getFichier());
+            inscription.setFichier(urlFichier); // stocke l’URL dans la base
+        }
+
+
+        Paiement paiement = null;
+        if (request.getPaiementId() != null && request.getPaiementId() != 0) {
+            paiement = paiementRepository.findById(request.getPaiementId())
+                    .orElseThrow(() -> new RuntimeException("Paiement introuvable"));
+        }
+
         // Créer l'inscription
-        Inscription inscription = new Inscription();
+
         inscription.setFormation(formation);
         inscription.setUtilisateur(utilisateur);
-        inscription.setDateInscription(LocalDate.now());
-        inscription.setEtatInscription(EtatInscription.DOCUMENTS_EN_ATTENTE);
-
-        // Si un paiement est fourni
-        if (request.getPaiementId() != null) {
-            Paiement paiement = paiementRepository.findById(request.getPaiementId())
-                    .orElseThrow(() -> new RuntimeException("Paiement non trouvé"));
-            inscription.setPaiement(paiement);
-        }
+        inscription.setPaiement(paiement);
+        inscription.setDateInscription(request.getDateInscription() != null ? request.getDateInscription() : LocalDate.now());
+        inscription.setEtatInscription(request.getEtatInscription());
+        inscription.setNumeroCni(request.getNumeroCni());
+        inscription.setDateNaissance(request.getDateNaissance());
+        inscription.setAddress(request.getAddress());
+        inscription.setNumeroTel(request.getNumeroTel());
+        inscription.setFichier(request.getFichier() != null ? request.getFichier().getOriginalFilename() : null);
 
         Inscription saved = inscriptionRepository.save(inscription);
         return convertToDto(saved);
+    }
+
+    public InscriptionDto updateInscription(Long id, CreateInscriptionRequest request) {
+
+        // Vérifier que l'inscription existe
+        Inscription inscription = inscriptionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inscription non trouvée"));
+
+        // Vérifier que la formation existe
+        Formation formation = formationRepository.findById(request.getFormationId())
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+
+        // Vérifier que l'utilisateur existe
+        Utilisateur utilisateur = utilisateurRepository.findById(request.getUtilisateurId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérifier le paiement si fourni
+        Paiement paiement = null;
+        if (request.getPaiementId() != null && request.getPaiementId() != 0) {
+            paiement = paiementRepository.findById(request.getPaiementId())
+                    .orElseThrow(() -> new RuntimeException("Paiement introuvable"));
+        }
+
+        // Mettre à jour les champs
+        inscription.setFormation(formation);
+        inscription.setUtilisateur(utilisateur);
+        inscription.setPaiement(paiement);
+
+        if (request.getDateInscription() != null) {
+            inscription.setDateInscription(request.getDateInscription());
+        }
+
+        if (request.getEtatInscription() != null) {
+            inscription.setEtatInscription(request.getEtatInscription());
+        }
+
+        if (request.getPaiementId() != null && request.getPaiementId() != 0) {
+             paiement = paiementRepository.findById(request.getPaiementId())
+                    .orElseThrow(() -> new RuntimeException("Paiement introuvable"));
+            inscription.setPaiement(paiement);
+        }
+
+        inscription.setNumeroCni(request.getNumeroCni());
+        inscription.setDateNaissance(request.getDateNaissance());
+        inscription.setAddress(request.getAddress());
+        inscription.setNumeroTel(request.getNumeroTel());
+
+        // Gestion du fichier
+        if (request.getFichier() != null && !request.getFichier().isEmpty()) {
+            String urlFichier = enregistrerFichier(request.getFichier());
+            inscription.setFichier(urlFichier);
+        }
+
+        // 7. Sauvegarder
+        Inscription saved = inscriptionRepository.save(inscription);
+
+        // 8. Retourner le DTO
+        return new InscriptionDto(
+                saved.getId(),
+                saved.getFormation().getId(),
+                saved.getUtilisateur().getId(),
+                saved.getPaiement() != null ? saved.getPaiement().getId() : null,
+                saved.getDateInscription().toString(),
+                saved.getEtatInscription(),
+                saved.getNumeroCni(),
+                saved.getDateNaissance().toString(),
+                saved.getAddress(),
+                saved.getNumeroTel(),
+                saved.getFichier()
+        );
     }
 
     // CREATE - Inscription avec création de paiement
@@ -348,36 +367,23 @@ public class InscriptionService {
 
     // Conversion Entity -> DTO
     private InscriptionDto convertToDto(Inscription inscription) {
-        InscriptionDto dto = new InscriptionDto();
-        dto.setId(inscription.getId());
-        dto.setDateInscription(inscription.getDateInscription());
-        dto.setEtatInscription(inscription.getEtatInscription());
+        return new InscriptionDto(
+                inscription.getId(),
+                inscription.getFormation() != null ? inscription.getFormation().getId() : null,
+                inscription.getUtilisateur() != null ? inscription.getUtilisateur().getId() : null,
+                inscription.getPaiement() != null ? inscription.getPaiement().getId() : 0L, // 0 = non payé
+                inscription.getDateInscription() != null ? inscription.getDateInscription().toString() : null,
+                inscription.getEtatInscription() != null ? inscription.getEtatInscription(): null,
+                inscription.getNumeroCni(),
+                inscription.getDateNaissance() != null ? inscription.getDateNaissance().toString() : null,
+                inscription.getAddress(),
+                inscription.getNumeroTel(),
+                inscription.getFichier()
+        );
+    }
 
-        // Informations de la formation
-        if (inscription.getFormation() != null) {
-            dto.setFormationId(inscription.getFormation().getId());
-            dto.setFormationTitre(inscription.getFormation().getTitre());
-            dto.setFormationDateDebut(inscription.getFormation().getDateDebut());
-            dto.setFormationDateFin(inscription.getFormation().getDeteFin());
-            dto.setFormationTarif(inscription.getFormation().getTarif());
-        }
-
-        // Informations de l'utilisateur
-        if (inscription.getUtilisateur() != null) {
-            dto.setUtilisateurId(inscription.getUtilisateur().getId());
-            dto.setUtilisateurNom(inscription.getUtilisateur().getNom());
-            dto.setUtilisateurPrenom(inscription.getUtilisateur().getPrenom());
-            dto.setUtilisateurEmail(inscription.getUtilisateur().getEmail());
-        }
-
-        // Informations du paiement
-        if (inscription.getPaiement() != null) {
-            dto.setPaiementId(inscription.getPaiement().getId());
-            dto.setPaiementNumPaiement(inscription.getPaiement().getNumPaiement());
-            dto.setPaiementMontant(inscription.getPaiement().getMontant());
-            dto.setPaiementStatut(inscription.getPaiement().getStatutPaiement().name());
-        }
-
-        return dto;
+    public Inscription findById(Long id) {
+        return inscriptionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inscription introuvable avec l'id : " + id));
     }
 }

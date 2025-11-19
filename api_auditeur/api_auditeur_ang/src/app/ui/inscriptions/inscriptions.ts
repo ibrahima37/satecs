@@ -1,63 +1,91 @@
-import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { InscriptionService } from '../../services/inscription.service';
-import { FormationService } from '../../services/formation.service';
-import { InscriptionRequest } from '../../models/utilisateur';
+import { Router } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Formation } from '../../models/formation';
-import { CreateInscriptionRequest } from '../../models/inscriptions';
-import { MatSelectModule } from '@angular/material/select';
+import { Inscription } from '../../models/inscriptions';
+import { FormationService } from '../../services/formation.service';
+import { InscriptionService } from '../../services/inscription.service';
+import { AuthService } from '../../services/auth.service';
+import { CreateInscriptionRequest, EtatInscription } from '../../models/inscriptions';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
-  selector: 'app-inscriptions',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatSelectModule, MatInputModule ],
-  templateUrl: './inscriptions.html',
-  styleUrls: ['./inscriptions.css']
+selector: 'app-inscriptions',
+standalone: true,
+imports: [
+  CommonModule,
+  HttpClientModule,
+  FormsModule,
+  ReactiveFormsModule,
+  MatPaginator,
+  MatTableModule,
+  MatCardModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatIconModule,
+  MatSelectModule,
+  MatButtonModule
+],
+templateUrl: './inscriptions.html',
+styleUrls: ['./inscriptions.css']
 })
+export class Inscriptions implements OnInit {
 
-export class Inscriptions implements OnInit{
+  inscriptions: Inscription[] = [];
+  dataSource = new MatTableDataSource<Inscription>();
+  totalInscriptions = 0;
+  displayedColumns: string[] = [
+    'id',
+    'dateInscription',
+    'etatInscription',
+    'formationId',
+    'paiementId',
+    'utilisateurId',
+    'numeroCni',
+    'address',
+    'dateNaissance',
+    'fichier',
+    'numeroTel',
+    'actions'
+  ];
 
-  loginForm: FormGroup;
-  formations: Formation[] = [];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
 
   constructor(
-    private fb: FormBuilder,
-    private formationService: FormationService,
     private inscriptionService: InscriptionService,
-    private auth: AuthService
-  ) {
-    this.loginForm = this.fb.group({
-      prenom: [''],
-      nom: [''],
-      tel: [''],
-      email: [''],
-      motDePasse: [''],
-      formationId: [null],
-      utilisateurId: [null]
-    });
-  }
+    public router: Router
+  ) {}
 
   ngOnInit(): void {
-    const utilisateurId = this.auth.getCurrentUser(); // méthode à créer si nécessaire
-    this.loginForm.patchValue({ utilisateurId });
-
-    this.formationService.getAllFormations().subscribe({
-      next: (data: any) => this.formations = data,
-      error: (err: any) => console.error('Erreur chargement formations', err)
-    });
+    this.loadInscriptions();
   }
 
-  inscrire(): void {
-    const inscriptionData = this.loginForm.value;
-    this.inscriptionService.inscrire(inscriptionData).subscribe({
-      next: () => console.log('Inscription réussie'),
-      error: (err: any) => console.error('Erreur inscription', err)
+  loadInscriptions(): void {
+    this.inscriptionService.getAllInscriptions().subscribe({
+      next: (data: Inscription[]) => {
+        const sortedData = data.sort((a, b) => a.id - b.id);
+
+        this.inscriptions = sortedData;
+        this.totalInscriptions = sortedData.length;
+        this.dataSource = new MatTableDataSource<Inscription>(sortedData);
+        this.dataSource.paginator = this.paginator;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des inscriptions', err);
+      }
     });
   }
 }

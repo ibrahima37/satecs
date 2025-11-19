@@ -72,7 +72,8 @@ export class Login implements OnInit{
       next: (response) => {
         console.log('Connexion réussie', response);
         this.loading = false;
-        this.utilisateurService.setUtilisateurConnect(response.utilisateur);
+        this.authService.handleAuthResponse(response);
+        //this.utilisateurService.setUtilisateurConnect(response.utilisateur);
         localStorage.setItem('token', response.token);
         this.router.navigate(['/admin']);
       },

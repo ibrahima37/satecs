@@ -1,16 +1,23 @@
 package com.example.api_auditeur.controller;
 
 import com.example.api_auditeur.dto.CreateInscriptionRequest;
+import com.example.api_auditeur.dto.ErrorDto;
 import com.example.api_auditeur.dto.InscriptionAvecPaiementRequest;
 import com.example.api_auditeur.dto.InscriptionDto;
+import com.example.api_auditeur.model.Formation;
 import com.example.api_auditeur.model.Inscription;
-import com.example.api_auditeur.model.Paiement;
+import com.example.api_auditeur.model.Utilisateur;
 import com.example.api_auditeur.model.page_enum.EtatInscription;
+import com.example.api_auditeur.repository.FormationRepository;
+import com.example.api_auditeur.repository.UtilisateurRepository;
 import com.example.api_auditeur.service.InscriptionService;
+import com.example.api_auditeur.service.SmsService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +27,75 @@ import java.util.Map;
 
 @RestController @AllArgsConstructor
 @RequestMapping("/api/inscription")
-//@CrossOrigin(origins = "http://localhost:4200")
 public class InscriptionController {
 
     private final InscriptionService inscriptionService;
+    private JavaMailSender mailSender;
+    private SmsService smsService;
+    private UtilisateurRepository utilisateurRepository;
+    private FormationRepository formationRepository;
 
+    private void envoyerEmailConfirmation(InscriptionDto inscriptionDto) {
+        Utilisateur utilisateur = utilisateurRepository.findById(inscriptionDto.getUtilisateurId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        Formation formation = formationRepository.findById(inscriptionDto.getFormationId())
+                .orElseThrow(() -> new RuntimeException("Formation introuvable"));
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(utilisateur.getEmail());
+        message.setSubject("Confirmation de création de compte");
+        message.setText("Bonjour " + utilisateur.getNom() + " " + utilisateur.getPrenom()
+                + ",\n\nVotre inscription à la formation (" + formation.getTitre() + ") est bien enregistrée avec l’état : "
+                + inscriptionDto.getEtatInscription() + ".");
+        mailSender.send(message);
+    }
+
+    private void envoyerEmailConfirmationFormation(InscriptionDto inscriptionDto) {
+        Utilisateur utilisateur = utilisateurRepository.findById(inscriptionDto.getUtilisateurId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        Formation formation = formationRepository.findById(inscriptionDto.getFormationId())
+                .orElseThrow(() -> new RuntimeException("Formation introuvable"));
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(utilisateur.getEmail());
+        message.setSubject("Confirmation de l'état de votre inscription");
+        message.setText("Bonjour " + utilisateur.getNom() + " " + utilisateur.getPrenom()
+                + ",\n\nVotre inscription à la formation (" + formation.getTitre() + ") est bien enregistrée avec l’état : "
+                + inscriptionDto.getEtatInscription() + ".");
+        mailSender.send(message);
+    }
     // CREATE - Inscription simple
     @PostMapping
     @PreAuthorize("hasAnyAuthority('AUDITEUR', 'ADMIN', 'SUPER_ADMIN')")
-    public ResponseEntity<InscriptionDto> creerInscription(@Valid @RequestBody CreateInscriptionRequest request) {
+    public ResponseEntity<?> creerInscription(@ModelAttribute CreateInscriptionRequest request) {
         try {
             InscriptionDto created = inscriptionService.creerInscription(request);
+
+            envoyerEmailConfirmation(created);
+
+            System.out.println("Payload reçu: " + request);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorDto("Erreur d'inscription", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<InscriptionDto> updateInscription(
+            @PathVariable Long id,
+            @Valid @ModelAttribute CreateInscriptionRequest request) {
+        try {
+            InscriptionDto dto = inscriptionService.updateInscription(id, request);
+
+            envoyerEmailConfirmationFormation(dto);
+            System.out.println("Payload reçu: " + request);
+
+            return ResponseEntity.ok(dto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

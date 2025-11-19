@@ -10,7 +10,7 @@ import { NotificationApp, CanalNotification, TypeFormation, CreateNotificationRe
 })
 export class NotificationService {
 
-  private apiUrl = 'http://192.168.1.109:9090/api/notification';
+  private apiUrl = 'http://192.168.1.248:9090/api/notification';
 
   constructor(private http: HttpClient, public auth: AuthService){}
 

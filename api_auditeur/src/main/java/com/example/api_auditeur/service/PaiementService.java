@@ -253,6 +253,8 @@ public class PaiementService {
         paiement.setMontant(paiementDto.getMontant());
         paiement.setStatutPaiement(paiementDto.getStatutPaiement());
         paiement.setModePaiement(paiementDto.getModePaiement());
+        paiement.setDatePaiement(paiementDto.getDatePaiement());
+        paiement.setNumPaiement(paiementDto.getNumPaiement());
 
         Paiement updated = paiementRepository.save(paiement);
         return convertToDto(updated);

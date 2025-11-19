@@ -9,7 +9,7 @@ import { Utilisateur } from '../models/utilisateur';
 export class UtilisateurService {
 
   private utilisateurConnecte: any = null;
-  private apiUrl = "http://192.168.1.109:9090/api/utilisateur";
+  private apiUrl = "http://192.168.1.248:9090/api/utilisateur";
   private isAuthentificatedSubject = new BehaviorSubject<boolean>(false);
   private currentUtilisateurSubject = new BehaviorSubject<any>(null);
 
@@ -27,6 +27,10 @@ export class UtilisateurService {
 
   isLoggedIn(): Observable<boolean> {
     return this.isAuthentificatedSubject.asObservable();
+  }
+
+  getUtilisateurById(id: number): Observable<Utilisateur> {
+    return this.http.get<Utilisateur>(`${this.apiUrl}/${id}`);
   }
 
   getCurrentUtilisateur(): Observable<any> {
@@ -76,7 +80,7 @@ export class UtilisateurService {
   }
 
   login(email: string, motDePasse: string): Observable<any>{
-    return this.http.post('http://192.168.1.184:8087/api/utilisateur/login', {email, motDePasse})
+    return this.http.post('`${this.apiUrl}`/login', {email, motDePasse})
   }
 
 }

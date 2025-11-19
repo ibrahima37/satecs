@@ -1,48 +1,100 @@
 <div class="container">
-  <mat-card class="login-form" [formGroup]="loginForm">
+  <mat-card class="inscription-card">
     <mat-card-header>
-      <mat-card-title>S'INSCRIRE</mat-card-title>
+      <mat-card-title>Liste des inscriptions</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
-      <mat-form-field appearance="outline">
-        <mat-label>Votre Prenom</mat-label>
-        <input matInput formControlName="prenom">
-      </mat-form-field>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mat-table-custom">
 
-      <mat-form-field appearance="outline">
-        <mat-label>Votre Nom</mat-label>
-        <input matInput formControlName="nom">
-      </mat-form-field>
+          <!-- Colonne ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> #ID </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.id }} </td>
+          </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Votre Numero Tel</mat-label>
-        <input matInput formControlName="tel">
-      </mat-form-field>
+          <!-- Colonne Date -->
+          <ng-container matColumnDef="dateInscription">
+            <th mat-header-cell *matHeaderCellDef> Date_Inscription </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.dateInscription }} </td>
+          </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Votre Email</mat-label>
-        <input matInput formControlName="email">
-      </mat-form-field>
+          <!-- Colonne État -->
+          <ng-container matColumnDef="etatInscription">
+            <th mat-header-cell *matHeaderCellDef> État_Inscription </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.etatInscription }} </td>
+          </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Votre Mot de Passe</mat-label>
-        <input matInput type="password" formControlName="motDePasse">
-      </mat-form-field>
+          <!-- Colonne Formation -->
+          <ng-container matColumnDef="formationId">
+            <th mat-header-cell *matHeaderCellDef> Formation_id </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.formationId }} </td>
+          </ng-container>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Choisissez une formation</mat-label>
-        <mat-select formControlName="formationId">
-          <mat-option *ngFor="let f of formations" [value]="f.id">
-            {{ f.titre }} ({{ f.typeFormation }} - {{ f.niveauFormation }})
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+          <!-- Colonne Paiement -->
+          <ng-container matColumnDef="paiementId">
+            <th mat-header-cell *matHeaderCellDef> Paiement_id </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.paiementId }} </td>
+          </ng-container>
 
+          <!-- Colonne Utilisateur -->
+          <ng-container matColumnDef="utilisateurId">
+            <th mat-header-cell *matHeaderCellDef> Utilisateur_Id </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.utilisateurId }} </td>
+          </ng-container>
+
+          <!-- Colonne NuméroCNI -->
+          <ng-container matColumnDef="numeroCni">
+            <th mat-header-cell *matHeaderCellDef> Numéro_CNI </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.numeroCni }} </td>
+          </ng-container>
+
+          <!-- Colonne Address -->
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef> Address </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.address }} </td>
+          </ng-container>
+
+          <!-- Colonne Date Naissance -->
+          <ng-container matColumnDef="dateNaissance">
+            <th mat-header-cell *matHeaderCellDef> Date_Naissance </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.dateNaissance }} </td>
+          </ng-container>
+
+          <!-- Colonne Fichiers -->
+          <ng-container matColumnDef="fichier">
+            <th mat-header-cell *matHeaderCellDef> Fichiers </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.fichier }} </td>
+          </ng-container>
+
+          <!-- Colonne Numéro_Tel -->
+          <ng-container matColumnDef="numeroTel">
+            <th mat-header-cell *matHeaderCellDef> Numéro_Tel </th>
+            <td mat-cell *matCellDef="let ins"> {{ ins.numeroTel }} </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let ins">
+              <button mat-button color="primary" (click)="router.navigate(['admin/inscriptions', ins.id])">
+                <mat-icon>edit</mat-icon> Modifier
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Header et Rows -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [length]="totalInscriptions"
+                       [pageSize]="10"
+                       [pageSizeOptions]="[5, 10, 20]"
+                       showFirstLastButtons>
+        </mat-paginator>
+      </div>
     </mat-card-content>
-
-    <mat-card-actions align="end">
-      <button (click)="inscrire()" mat-raised-button color="primary">S'inscrire</button>
-    </mat-card-actions>
   </mat-card>
 </div>

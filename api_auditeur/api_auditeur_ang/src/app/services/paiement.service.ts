@@ -10,7 +10,7 @@ import { Paiement, StatutPaiement, ModePaiement, CreatePaiementRequest } from '.
 })
 export class PaiementService {
 
-private apiUrl = 'http://192.168.1.109:9090/api/paiement';
+private apiUrl = 'http://192.168.1.248:9090/api/paiement';
 
 constructor(private http: HttpClient, public auth: AuthService) {}
 

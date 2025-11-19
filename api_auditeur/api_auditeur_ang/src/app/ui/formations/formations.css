@@ -4,6 +4,10 @@
   padding: 0 15px;
 }
 
+mat-card-actions button {
+  margin-right: 8px;
+}
+
 mat-card {
   border-radius: 8px;
   background-color: #f9f9f9;

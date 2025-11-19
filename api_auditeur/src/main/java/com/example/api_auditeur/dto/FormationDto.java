@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FormationDto {
+
     private Long id;
 
     @NotBlank(message = "Le titre est obligatoire")

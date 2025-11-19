@@ -66,4 +66,8 @@ public class UtilisateurService {
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + email));
     }
 
+    public Utilisateur getUserById(Long id) {
+        return utilisateurRepo.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + id));
+    }
 }

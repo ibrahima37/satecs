@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
 
-  private apiUrl = 'http://localhost:9090/api/statistics'; // adapte l'URL si besoin
+  private apiUrl = 'http://192.168.1.248:9090/api/statistics'; // adapte l'URL si besoin
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 

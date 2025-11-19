@@ -33,7 +33,7 @@ constructor(
     }
 
     // 🔐 Récupère les rôles de l'utilisateur
-    const userRoles: string[] = this.authService.roles || [];
+    const userRoles: string[] = this.authService.getRoles();
 
     // 🔎 Vérifie si l'utilisateur possède au moins un rôle requis
     const hasRequiredRole = requiredRoles.some((role: string) =>

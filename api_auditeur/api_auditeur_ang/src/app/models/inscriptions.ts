@@ -2,27 +2,19 @@ import { Formation } from './formation';
 import { Utilisateur } from './utilisateur';
 import { Paiement, ModePaiement } from './paiement';
 
-export interface Inscriptions{
-  id?: number;
+export interface Inscription{
+  id: number;
   formation?: Formation;
-  dateInscription?: string;
+  dateInscription: string;
   utilisateur?: Utilisateur;
-  paiement: Paiement;
-  etatInscription?: EtatInscription;
+  paiement?: Paiement;
+  etatInscription: EtatInscription;
+  numeroCni: string;
+  dateNaissance: string;
+  address: string;
+  numeroTel: string;
+  fichier: string;
 
-  formationId: number;
-  formationTitre?: string;
-  formationDateDebut?: string;
-  formationDateFin?: string;
-  formationTarif?: number;
-  utilisateurId: number;
-  utilisateurNom?: string;
-  utilisateurPrenom?: string;
-  utilisateurEmail?: string;
-  paiementId?: number;
-  paiementNumPaiement?: string;
-  paiementMontant?: number;
-  paiementStatut?: string;
 }
 
 export enum EtatInscription {
@@ -30,18 +22,22 @@ export enum EtatInscription {
   REJETER = 'REJETER',
   ANNULEE = 'ANNULEE',
   EN_COURS_VALIDATION = 'EN_COURS_VALIDATION',
-  PAIEMENT_ENaTTENTE = 'PAIEMENT_EN_ATTENTE',
+  PAIEMENT_EN_ATTENTE = 'PAIEMENT_EN_ATTENTE',
   DOCUMENTS_EN_ATTENTE ='DOCUMENTS_EN_ATTENTE'
 }
 
 export interface CreateInscriptionRequest {
-  prenom: string;
-  nom: string;
-  tel: string;
-  email: string;
-  motDePasse: string;
+
   formationId: number;
   utilisateurId: number;
+  paiementId?: number;
+  dateInscription: string;
+  etatInscription: string;
+  numeroCni: string;
+  dateNaissance: string;
+  address: string;
+  numeroTel: string;
+  fichier?: File;
 }
 
 

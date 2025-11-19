@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -33,4 +34,10 @@ public class Inscription {
 
     @Enumerated(EnumType.STRING)
     private EtatInscription etatInscription;
+    private String numeroCni;
+    private LocalDate dateNaissance;
+    private String address;
+    private String numeroTel;
+    private String fichier;
+
 }

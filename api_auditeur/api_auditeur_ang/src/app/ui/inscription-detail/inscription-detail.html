@@ -1,0 +1,62 @@
+<h2 mat-dialog-title>Mettre à jour une inscription</h2>
+
+<form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+  <div class="user-display-top" *ngIf="utilisateur">
+    <mat-icon>person</mat-icon>
+    <span class="user-name">{{ utilisateur.prenom }} {{ utilisateur.nom }}</span>
+    <span class="user-email">{{ utilisateur.email }}</span>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Numéro CNI</mat-label>
+    <input matInput formControlName="numeroCni" readonly />
+  </mat-form-field>
+
+  <!-- Date de naissance -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Date de naissance</mat-label>
+    <input matInput formControlName="dateNaissance" readonly />
+  </mat-form-field>
+
+  <!-- Adresse -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Adresse</mat-label>
+    <input matInput formControlName="address" readonly />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>État de l'inscription</mat-label>
+    <mat-select formControlName="etatInscription">
+      <mat-option [value]="EtatInscription.DOCUMENTS_EN_ATTENTE">Documents en attente</mat-option>
+      <mat-option [value]="EtatInscription.PAIEMENT_EN_ATTENTE">Paiement en attente</mat-option>
+      <mat-option [value]="EtatInscription.EN_COURS_VALIDATION">En cours de validation</mat-option>
+      <mat-option [value]="EtatInscription.ANNULEE">Annulée</mat-option>
+      <mat-option [value]="EtatInscription.REJETER">Rejetée</mat-option>
+      <mat-option [value]="EtatInscription.VALIDER">Validée</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Paiement</mat-label>
+    <mat-select formControlName="paiementId">
+      <mat-option [value]="0">Aucun (paiement en attente)</mat-option>
+      <mat-option *ngFor="let p of paiements" [value]="p.id">
+        {{ p.modePaiement }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Numéro de téléphone -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Numéro de téléphone</mat-label>
+    <input matInput formControlName="numeroTel" readonly />
+  </mat-form-field>
+
+  <!-- Upload fichier -->
+  <div class="file-upload">
+    <label>Pièce jointe :</label>
+    <input matInput formControlName="fichier" readonly />
+  </div>
+
+  <button mat-raised-button color="primary" type="submit">Mettre à jour</button>
+</form>

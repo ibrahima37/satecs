@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class PaiementDto {
     private Long id;
 
-    private String numPaiement; // Auto-généré
+    private String numPaiement;
 
     @NotBlank(message = "Le numéro de transaction est obligatoire")
     @Size(min = 5, max = 100, message = "Le numéro de transaction doit contenir entre 5 et 100 caractères")
@@ -33,7 +33,7 @@ public class PaiementDto {
     @NotNull(message = "Le statut du paiement est obligatoire")
     private StatutPaiement statutPaiement;
 
-    private LocalDate datePaiement; // Auto-généré si non fourni
+    private LocalDate datePaiement;
 
     @NotNull(message = "Le mode de paiement est obligatoire")
     private ModePaiement modePaiement;

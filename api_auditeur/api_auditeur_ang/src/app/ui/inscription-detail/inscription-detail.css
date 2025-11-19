@@ -1,0 +1,84 @@
+/* Style du titre du dialog */
+h2[mat-dialog-title] {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1976d2; /* bleu institutionnel */
+  margin: 0 0 1rem 0;
+  text-align: center;
+  border-bottom: 2px solid #1976d2;
+  padding-bottom: 0.5rem;
+}
+
+/* Zone utilisateur en haut */
+.user-display-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f5f5f5;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.user-display-top mat-icon {
+  color: #1976d2;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: #666;
+  margin-left: auto; /* pousse l'email à droite */
+}
+
+/* Champs du formulaire */
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+mat-form-field {
+  background-color: #fff;
+}
+
+mat-label {
+  font-weight: 500;
+  color: #444;
+}
+
+mat-error {
+  font-size: 0.8rem;
+  color: #d32f2f;
+}
+
+/* Upload fichier */
+.file-upload {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-upload label {
+  font-weight: 500;
+  color: #444;
+}
+
+.file-upload input[type="file"] {
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Bouton Mettre à jour */
+button[mat-raised-button] {
+  display: block;
+  margin: 1.5rem auto 0 auto;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}

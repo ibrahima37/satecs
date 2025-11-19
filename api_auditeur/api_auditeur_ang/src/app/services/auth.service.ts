@@ -15,11 +15,11 @@ interface LoginResponse{
 })
 export class AuthService {
 
-  private apiUrl = "http://192.168.1.109:9090/api/utilisateur";
+  private apiUrl = "http://192.168.1.248:9090/api/utilisateur";
 
   private readonly TOKEN_KEY = 'token';
   private currentUserSubject = new BehaviorSubject<Utilisateur | null>(this.getStoredUser());
-  private currentUser$ = this.currentUserSubject.asObservable();
+  public currentUser$ = this.currentUserSubject.asObservable();
   public roles: string[] = [];
 
   constructor(
@@ -71,11 +71,11 @@ export class AuthService {
     );
   }
 
-  private handleAuthResponse(response: AuthResponse): void {
-    if (response.token && response.utilisateur) {
+  public handleAuthResponse(response: AuthResponse): void {
+    if (response.token && response.user) {
       localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.utilisateur));
-      this.currentUserSubject.next(response.utilisateur);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      this.currentUserSubject.next(response.user);
       this.roles = this.extractRolesFromToken(response.token);
     }
   }
@@ -124,14 +124,49 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  getCurrentUser(): Utilisateur | null {
-    return this.currentUserSubject.value;
+ // getCurrentUser(): Utilisateur | null {
+ //   return this.currentUserSubject.value;
+ // }
+
+  public getCurrentUser$(): Observable<Utilisateur | null> {
+    return this.currentUserSubject.asObservable();
   }
+
+  public setCurrentUser(user: Utilisateur): void {
+    this.currentUserSubject.next(user);
+  }
+
+  public reloadUser(): void {
+  const userJson = localStorage.getItem('user');
+  if (userJson) {
+    try {
+      const user = JSON.parse(userJson);
+      this.currentUserSubject.next(user);
+    } catch (e) {
+      console.error('Erreur lors du rechargement de l\'utilisateur', e);
+    }
+  }
+}
+
+
 
   // ✅ Méthode publique pour obtenir les rôles
   getUserRoles(): string[] {
     return this.roles;
   }
+
+  getRoles(): string[] {
+    const token = localStorage.getItem('token');
+    if (!token) return [];
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.roles || []; // ou payload.authorities selon ton backend
+    } catch (e) {
+      return [];
+    }
+  }
+
 
   // ✅ Vérifier si l'utilisateur a un rôle spécifique
   hasRole(role: string): boolean {

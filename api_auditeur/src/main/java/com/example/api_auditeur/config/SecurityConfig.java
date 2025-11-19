@@ -49,8 +49,6 @@ import java.util.List;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-   // private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     @Bean
     public UserDetailsService userDetailsService(){
         return new CustomUserDetailsService();
@@ -71,7 +69,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity httpSecurity, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception{
+            HttpSecurity httpSecurity,
+            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception{
         return httpSecurity
                 .cors()
                 .and()

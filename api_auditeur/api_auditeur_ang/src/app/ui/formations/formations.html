@@ -2,7 +2,9 @@
   <mat-card>
     <mat-card-header>
       <mat-card-title>FORMATIONS</mat-card-title>
-      <button mat-raised-button color="primary" [routerLink]="['/admin/formations/nouvelle']">
+      <button mat-raised-button color="primary"
+              [routerLink]="['/admin/formations/nouvelle']"
+              *ngIf="hasRequiredRole(currentUser$ | async)">
         + Ajouter une formation
       </button>
     </mat-card-header>
@@ -26,10 +28,13 @@
             <mat-card-actions>
               <button mat-raised-button color="primary"
                       *ngIf="formation.id !== undefined"
-                      (click)="inscrire(formation.id!)">
-                S'inscrire
+                      (click)="inscrireFormation(formation.id!)">
+                <mat-icon>how_to_reg</mat-icon>S'inscrire
               </button>
-              <button mat-button color="accent" [routerLink]="['/formations', formation.id]">Modifier</button>
+              <button mat-button color="accent"
+                      [routerLink]="['/formations', formation.id]"
+                      *ngIf="hasRequiredRole(currentUser$ | async)">
+                <mat-icon>edit</mat-icon> Modifier</button>
             </mat-card-actions>
           </mat-card>
         </div>

@@ -1,12 +1,16 @@
 package com.example.api_auditeur.model;
 
 import com.example.api_auditeur.model.page_enum.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -24,5 +28,6 @@ public class Utilisateur {
     private Role role;
 
     @OneToMany(mappedBy = "utilisateur")
+    @JsonIgnore
     private List<Inscription> inscriptionList;
 }

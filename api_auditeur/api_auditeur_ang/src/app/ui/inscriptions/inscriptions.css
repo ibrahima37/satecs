@@ -1,48 +1,79 @@
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
-
-.login-form {
+.inscription-card {
   padding: 20px;
-  background-color: #fafafa;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 mat-card-header {
-  text-align: center;
-  margin-bottom: 10px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 mat-card-title {
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #1976d2;
-}
-
-mat-form-field {
+  background-color: #0D47A1;
+  color: white;
+  padding: 12px 24px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   width: 100%;
-  margin-bottom: 16px;
+  display: block;
 }
 
-mat-card-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+.table-wrapper {
+  overflow-x: unset;
+  width: 100%;
 }
 
-button[mat-raised-button] {
-  min-width: 120px;
+.mat-table-custom {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 0 10px;
-  }
+.mat-header-row {
+  background-color: #e8eaf6;
+}
 
-  mat-card-actions {
-    justify-content: center;
-  }
+.mat-header-cell {
+  font-weight: 600;
+  color: #3f51b5;
+  padding: 12px;
+  border-bottom: 2px solid #ccc;
+  text-align: left;
+}
+
+.mat-cell {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.mat-row:hover {
+  background-color: #f0f0f0;
+}
+
+button[mat-button] {
+  font-weight: 500;
+  color: #3f51b5;
+}
+
+button[mat-button]:hover {
+  background-color: rgba(63, 81, 181, 0.1);
+}
+
+/* Pagination */
+.mat-paginator {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.mat-paginator-range-label,
+.mat-paginator-page-size-label {
+  font-size: 14px;
+  color: #555;
 }
